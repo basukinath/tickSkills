@@ -1,119 +1,104 @@
-CodePrepCodePrep is a web platform designed to help users prepare for programming interviews and upskill their coding abilities. It provides a variety of coding questions, multiple-choice questions (MCQs), brain teasers, and progress tracking to enhance learning and problem-solving skills.FeaturesCoding Challenges: Solve a wide range of coding problems with varying difficulty levels to sharpen algorithmic and problem-solving skills.
-Multiple-Choice Questions (MCQs): Test theoretical knowledge with MCQs covering data structures, algorithms, and core programming concepts.
-Brain Teasers: Engage with logic-based puzzles to improve critical thinking and problem-solving.
-Progress Tracking: Monitor your learning journey with personalized dashboards, performance analytics, and progress reports.
-User Authentication: Secure user accounts with role-based access control and authentication using Spring Security.
-Scalable Architecture: Built with Spring Boot and Spring Cloud for robust, scalable, and distributed system design.
-Containerization: Deployed using Docker for consistent and portable environments.
+# TickSkills
 
-Tech StackBackend: Spring Boot (Core framework for RESTful APIs)
-Spring Cloud (Microservices and distributed system support)
-Spring Security (Authentication and authorization)
-Spring Data JPA (Database interactions)
+TickSkills is a Spring Boot application designed to manage users and their skills. It provides a set of REST APIs to perform operations such as adding users, retrieving user information, and more.
 
-Database: PostgreSQL/MySQL (Relational database for user data, questions, and progress)
-Redis (Optional for caching and session management)
+## Features
 
-Frontend: React.js (Interactive and dynamic UI)
-Tailwind CSS/Bootstrap (Styling and responsive design)
+- **User Management:** Add single or multiple users to the system.
+- **RESTful API:** A well-defined set of endpoints to interact with the application.
+- **Validation:** Input validation to ensure data integrity.
+- **Centralized Exception Handling:** Graceful error handling for a better user experience.
 
-Containerization & Deployment:Docker (Containerization for consistent environments)
-Docker Compose/Kubernetes (Orchestration for multi-container setups)
+## Technologies Used
 
-Other Tools:Maven/Gradle (Dependency management)
-Git (Version control)
-JUnit (Testing)
-Swagger (API documentation)
+- **Java 17:** The core programming language for the application.
+- **Spring Boot 3:** The framework used to build the application.
+- **Spring Web:** For building RESTful APIs.
+- **Spring Data JPA:** For data persistence and interaction with the database.
+- **MySQL:** The relational database used to store data.
+- **Lombok:** To reduce boilerplate code.
+- **Gradle:** The build automation tool for the project.
 
-Project Structure
+## Setup and Installation
 
-CodePrep/
-├── src/
-│   ├── main/
-│   │   ├── java/com/codeprep/
-│   │   │   ├── config/         # Spring configuration files
-│   │   │   ├── controller/     # REST API controllers
-│   │   │   ├── service/        # Business logic
-│   │   │   ├── repository/     # Data access layer
-│   │   │   ├── model/          # Entity classes
-│   │   │   ├── security/       # Security configurations
-│   │   └── resources/          # Application properties, static files
-│   └── test/                   # Unit and integration tests
-├── frontend/                   # React.js frontend code
-├── docker/                     # Dockerfiles and Docker Compose configurations
-├── pom.xml                     # Maven build file (or build.gradle for Gradle)
-└── README.md                   # Project documentation
+To get the project up and running on your local machine, follow these steps:
 
-Getting StartedPrerequisitesJava 17 or higher
-Node.js (for frontend development)
-Docker and Docker Compose
-PostgreSQL/MySQL
-Maven/Gradle
-Git
+### Prerequisites
 
-InstallationClone the Repository:bash
+- **Java 17** or higher
+- **Gradle**
+- **MySQL**
 
-git clone https://github.com/yourusername/CodePrep.git
-cd CodePrep
+### Installation
 
-Backend Setup:Configure database settings in src/main/resources/application.properties.
-Build the project:bash
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   ```
+2. **Navigate to the project directory:**
+   ```bash
+   cd tickSkillsGradle
+   ```
+3. **Configure the database:**
+   Open `src/main/resources/application.properties` and update the database configuration with your MySQL credentials:
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/tickskills
+   spring.datasource.username=root
+   spring.datasource.password=12345
+   spring.jpa.hibernate.ddl-auto=update
+   spring.jpa.show-sql=true
+   ```
+4. **Run the application:**
+   ```bash
+   ./gradlew bootRun
+   ```
+The application will start on `http://localhost:8080`.
 
-mvn clean install
+## API Endpoints
 
-Run the Spring Boot application:bash
+The following are the available API endpoints:
 
-mvn spring-boot:run
+| Method | Endpoint         | Description              | Request Body                               | Response                                     |
+|--------|------------------|--------------------------|--------------------------------------------|----------------------------------------------|
+| `POST` | `/addUser`       | Adds a single user.      | `UserDTO` object                           | A success message with the username.         |
+| `POST` | `/addBulkUsers`  | Adds multiple users.     | A list of `UserDTO` objects                | A list of usernames that were added.         |
+| `GET`  | `/getAllUsers`   | Retrieves all usernames. | -                                          | A list of all usernames in the database.     |
 
-Frontend Setup:Navigate to the frontend directory:bash
+### Example `UserDTO`
 
-cd frontend
+```json
+{
+    "name": "Basuki",
+    "username": "basuki",
+    "password": "password123",
+    "email": "basuki@example.com",
+    "phone": "1234567890",
+    "userType": "ADMIN"
+}
+```
 
-Install dependencies:bash
+## Database Schema
 
-npm install
+The primary table in the database is the `Users` table, which has the following columns:
 
-Start the development server:bash
+- `id` (Primary Key)
+- `name`
+- `username` (Unique)
+- `password`
+- `email`
+- `phone`
+- `userType`
+- `createdOn`
+- `createdBy`
 
-npm start
+## How to Contribute
 
-Docker Setup:Build and run the application using Docker Compose:bash
+Contributions are welcome! If you would like to contribute to the project, please follow these steps:
 
-docker-compose up --build
-
-The application will be accessible at http://localhost:8080.
-
-ConfigurationDatabase: Update application.properties with your database credentials:properties
-
-spring.datasource.url=jdbc:postgresql://localhost:5432/codeprep
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-
-Spring Security: Configure user roles and authentication in security/SecurityConfig.java.
-Spring Cloud: Set up service discovery, load balancing, or API gateway if using microservices (e.g., Eureka, Spring Cloud Gateway).
-
-API EndpointsPOST /api/auth/register: Register a new user.
-POST /api/auth/login: Authenticate and generate JWT token.
-GET /api/questions/coding: Fetch coding questions.
-POST /api/questions/submit: Submit code for evaluation.
-GET /api/mcqs: Retrieve MCQs.
-GET /api/progress: View user progress and analytics.
-
-(Full API documentation available via Swagger at /swagger-ui/.)DeploymentLocal Deployment: Use Docker Compose for local testing.
-Cloud Deployment: Deploy on AWS, Azure, or GCP using Kubernetes for orchestration.
-Ensure environment variables for sensitive data (e.g., database credentials, JWT secret) are set in your deployment configuration.
-
-ContributingWe welcome contributions! To contribute:Fork the repository.
-Create a new branch (git checkout -b feature/your-feature).
-Commit your changes (git commit -m "Add your feature").
-Push to the branch (git push origin feature/your-feature).
-Open a pull request.
-
-Please ensure your code follows the project's coding standards and includes tests.LicenseThis project is licensed under the MIT License. See the LICENSE file for details.ContactFor questions or feedback, reach out at your-email@example.com (mailto:your-email@example.com) or open an issue on GitHub.This README provides a clear overview of the project, its features, and setup instructions while incorporating the technologies you mentioned (Spring Boot, Spring Cloud, Spring Security, Docker). You can customize it further with specific details like your GitHub repository URL, email, or additional features as the project evolves. Let me know if you'd like to refine any section or add more details!
-
-progress tracking features
-
-coding bootcamps comparison
-
-more concise instructions
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/your-feature-name`).
+3. Make your changes.
+4. Commit your changes (`git commit -m 'Add some feature'`).
+5. Push to the branch (`git push origin feature/your-feature-name`).
+6. Open a pull request.
 

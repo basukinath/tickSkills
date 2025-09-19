@@ -1,0 +1,85 @@
+{
+	"info": {
+		"_postman_id": "a8a0b3a0-7b1a-4b1a-8b1a-3a0b1a0b1a0b",
+		"name": "TickSkills API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add Single User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Aarav Sharma\",\n    \"username\": \"aarav.sharma\",\n    \"password\": \"password123\",\n    \"email\": \"aarav.sharma@example.com\",\n    \"phone\": \"9876543210\",\n    \"userType\": \"ADMIN\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/addUser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"addUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Bulk Users",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"name\": \"Diya Patel\",\n        \"username\": \"diya.patel\",\n        \"password\": \"password123\",\n        \"email\": \"diya.patel@example.com\",\n        \"phone\": \"9876543211\",\n        \"userType\": \"ADMIN\"\n    },\n    {\n        \"name\": \"Rohan Kumar\",\n        \"username\": \"rohan.kumar\",\n        \"password\": \"password123\",\n        \"email\": \"rohan.kumar@example.com\",\n        \"phone\": \"9876543212\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Ananya Singh\",\n        \"username\": \"ananya.singh\",\n        \"password\": \"password123\",\n        \"email\": \"ananya.singh@example.com\",\n        \"phone\": \"9876543213\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Vivaan Gupta\",\n        \"username\": \"vivaan.gupta\",\n        \"password\": \"password123\",\n        \"email\": \"vivaan.gupta@example.com\",\n        \"phone\": \"9876543214\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Isha Sharma\",\n        \"username\": \"isha.sharma\",\n        \"password\": \"password123\",\n        \"email\": \"isha.sharma@example.com\",\n        \"phone\": \"9876543215\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Kabir Verma\",\n        \"username\": \"kabir.verma\",\n        \"password\": \"password123\",\n        \"email\": \"kabir.verma@example.com\",\n        \"phone\": \"9876543216\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Myra Reddy\",\n        \"username\": \"myra.reddy\",\n        \"password\": \"password123\",\n        \"email\": \"myra.reddy@example.com\",\n        \"phone\": \"9876543217\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Arjun Nair\",\n        \"username\": \"arjun.nair\",\n        \"password\": \"password123\",\n        \"email\": \"arjun.nair@example.com\",\n        \"phone\": \"9876543218\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Saanvi Joshi\",\n        \"username\": \"saanvi.joshi\",\n        \"password\": \"password123\",\n        \"email\": \"saanvi.joshi@example.com\",\n        \"phone\": \"9876543219\",\n        \"userType\": \"STANDARD\"\n    }\n]"
+				},
+				"url": {
+					"raw": "http://localhost:8080/addBulkUsers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"addBulkUsers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Users",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/getAllUsers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"getAllUsers"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
+
