@@ -1,202 +1,104 @@
-<div align="center">
+# TickSkills
 
-# 🎯 TickSkills
+TickSkills is a Spring Boot application designed to manage users and their skills. It provides a set of REST APIs to perform operations such as adding users, retrieving user information, and more.
 
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/spring/spring-original.svg" alt="Spring Boot Logo" width="100" height="100"/>
+## Features
 
-### 🚀 A Modern Spring Boot Application for Skills & User Management
+- **User Management:** Add single or multiple users to the system.
+- **RESTful API:** A well-defined set of endpoints to interact with the application.
+- **Validation:** Input validation to ensure data integrity.
+- **Centralized Exception Handling:** Graceful error handling for a better user experience.
 
-[![Java](https://img.shields.io/badge/Java-17+-orange?style=for-the-badge&logo=java&logoColor=white)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.0+-brightgreen?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0+-blue?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![Gradle](https://img.shields.io/badge/Gradle-7.0+-lightgrey?style=for-the-badge&logo=gradle&logoColor=white)](https://gradle.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+## Technologies Used
 
----
+- **Java 17:** The core programming language for the application.
+- **Spring Boot 3:** The framework used to build the application.
+- **Spring Web:** For building RESTful APIs.
+- **Spring Data JPA:** For data persistence and interaction with the database.
+- **MySQL:** The relational database used to store data.
+- **Lombok:** To reduce boilerplate code.
+- **Gradle:** The build automation tool for the project.
 
-*A robust and scalable REST API solution for managing users and their skills with enterprise-grade features*
+## Setup and Installation
 
-</div>
+To get the project up and running on your local machine, follow these steps:
 
-## ✨ Features
+### Prerequisites
 
-<table>
-<tr>
-<td>
+- **Java 17** or higher
+- **Gradle**
+- **MySQL**
 
-### 👥 User Management
-- ✅ Single & bulk user registration
-- 🔍 Advanced user retrieval
-- 🛡️ Role-based access control
-- 📊 User analytics dashboard
+### Installation
 
-</td>
-<td>
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   ```
+2. **Navigate to the project directory:**
+   ```bash
+   cd tickSkillsGradle
+   ```
+3. **Configure the database:**
+   Open `src/main/resources/application.properties` and update the database configuration with your MySQL credentials:
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/tickskills
+   spring.datasource.username=root
+   spring.datasource.password=12345
+   spring.jpa.hibernate.ddl-auto=update
+   spring.jpa.show-sql=true
+   ```
+4. **Run the application:**
+   ```bash
+   ./gradlew bootRun
+   ```
+The application will start on `http://localhost:8080`.
 
-### 🔧 Technical Excellence
-- 🌐 RESTful API architecture
-- ✅ Comprehensive input validation
-- 🚨 Centralized exception handling
-- 📱 API documentation with Postman
+## API Endpoints
 
-</td>
-</tr>
-</table>
+The following are the available API endpoints:
 
-## 🛠️ Tech Stack
+| Method | Endpoint         | Description              | Request Body                               | Response                                     |
+|--------|------------------|--------------------------|--------------------------------------------|----------------------------------------------|
+| `POST` | `/addUser`       | Adds a single user.      | `UserDTO` object                           | A success message with the username.         |
+| `POST` | `/addBulkUsers`  | Adds multiple users.     | A list of `UserDTO` objects                | A list of usernames that were added.         |
+| `GET`  | `/getAllUsers`   | Retrieves all usernames. | -                                          | A list of all usernames in the database.     |
 
-<div align="center">
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg" width="20"/> **Java** | 17+ | Core Language |
-| <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/spring/spring-original.svg" width="20"/> **Spring Boot** | 3.0+ | Framework |
-| <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original.svg" width="20"/> **MySQL** | 8.0+ | Database |
-| <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/gradle/gradle-plain.svg" width="20"/> **Gradle** | 7.0+ | Build Tool |
-| **Lombok** | Latest | Code Simplification |
-| **Spring Data JPA** | Latest | Data Persistence |
-
-</div>
-
-## ⚡ Quick Start
-
-### 📋 Prerequisites
-
-<div align="center">
-
-| Requirement | Version | Download |
-|-------------|---------|----------|
-| ☕ **Java** | 17+ | [Download JDK](https://adoptium.net/) |
-| 🐘 **MySQL** | 8.0+ | [Download MySQL](https://dev.mysql.com/downloads/) |
-| 🔧 **Gradle** | 7.0+ | [Download Gradle](https://gradle.org/install/) |
-
-</div>
-
-### 🚀 Installation
-
-```bash
-# 1️⃣ Clone the repository
-git clone https://github.com/basukinath/tickSkills.git
-
-# 2️⃣ Navigate to project directory
-cd tickSkillsGradle
-
-# 3️⃣ Configure database (see configuration below)
-
-# 4️⃣ Run the application
-./gradlew bootRun
-```
-
-### ⚙️ Database Configuration
-
-Update `src/main/resources/application.properties`:
-
-```properties
-# 🗄️ Database Configuration
-spring.datasource.url=jdbc:mysql://localhost:3306/tickskills
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-
-# 🔧 JPA Configuration
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
-```
-
-> 🌐 **Application URL:** `http://localhost:8080`
-
-## 🔌 API Endpoints
-
-<div align="center">
-
-### 📡 Available REST APIs
-
-</div>
-
-| 🎯 Method | 🛣️ Endpoint | 📝 Description | 📤 Request Body | 📥 Response |
-|-----------|-------------|----------------|-----------------|-------------|
-| `🟢 POST` | `/addUser` | Add a single user | `UserDTO` object | Success message with username |
-| `🟢 POST` | `/addBulkUsers` | Add multiple users | List of `UserDTO` objects | List of added usernames |
-| `🔵 GET` | `/getAllUsers` | Get all usernames | - | List of all usernames |
-
-### 📋 UserDTO Example
+### Example `UserDTO`
 
 ```json
 {
-    "name": "Basuki Nath",
+    "name": "Basuki",
     "username": "basuki",
-    "password": "securePassword123",
+    "password": "password123",
     "email": "basuki@example.com",
-    "phone": "+91-9876543210",
+    "phone": "1234567890",
     "userType": "ADMIN"
 }
 ```
 
-> 📚 **Postman Collection:** Import `tickskills.postman_collection.json` for easy API testing
+## Database Schema
 
-## 🗄️ Database Schema
+The primary table in the database is the `Users` table, which has the following columns:
 
-<div align="center">
+- `id` (Primary Key)
+- `name`
+- `username` (Unique)
+- `password`
+- `email`
+- `phone`
+- `userType`
+- `createdOn`
+- `createdBy`
 
-### 👤 Users Table Structure
+## How to Contribute
 
-</div>
+Contributions are welcome! If you would like to contribute to the project, please follow these steps:
 
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| 🆔 `id` | BIGINT | PRIMARY KEY, AUTO_INCREMENT | Unique identifier |
-| 👤 `name` | VARCHAR(255) | NOT NULL | Full name of user |
-| 🏷️ `username` | VARCHAR(50) | UNIQUE, NOT NULL | Login username |
-| 🔒 `password` | VARCHAR(255) | NOT NULL | Encrypted password |
-| 📧 `email` | VARCHAR(255) | NOT NULL | Email address |
-| 📱 `phone` | VARCHAR(20) | - | Contact number |
-| 🎭 `userType` | ENUM | NOT NULL | User role (ADMIN/USER) |
-| 📅 `createdOn` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Creation date |
-| 👨‍💻 `createdBy` | VARCHAR(50) | - | Creator username |
-
-## 🤝 Contributing
-
-<div align="center">
-
-### 🎉 We Welcome Contributions!
-
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
-
-</div>
-
-```bash
-# 🍴 Fork the repository
-# 🌿 Create your feature branch
-git checkout -b feature/amazing-feature
-
-# 💾 Commit your changes
-git commit -m 'Add some amazing feature'
-
-# 📤 Push to the branch
-git push origin feature/amazing-feature
-
-# 🔀 Open a Pull Request
-```
-
-### 📝 Contribution Guidelines
-
-1. 🔍 **Code Review:** All submissions require review
-2. ✅ **Tests:** Ensure your code is well-tested
-3. 📚 **Documentation:** Update docs for new features
-4. 🎨 **Style:** Follow existing code conventions
-
----
-
-<div align="center">
-
-### 🌟 Show Your Support
-
-Give a ⭐ if this project helped you!
-
-**Made with ❤️ by [Basuki Nath](https://github.com/basukinath)**
-
-[![GitHub followers](https://img.shields.io/github/followers/basukinath?style=social)](https://github.com/basukinath)
-[![GitHub stars](https://img.shields.io/github/stars/basukinath/tickSkills?style=social)](https://github.com/basukinath/tickSkills)
-
-</div>
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/your-feature-name`).
+3. Make your changes.
+4. Commit your changes (`git commit -m 'Add some feature'`).
+5. Push to the branch (`git push origin feature/your-feature-name`).
+6. Open a pull request.
 

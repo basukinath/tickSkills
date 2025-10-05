@@ -32,5 +32,9 @@ public class Users {
     private LocalDateTime lastLogin;
     private LocalDateTime createdOn;
     private String createdBy;
+    private String photoUrl;
+
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
 
 }

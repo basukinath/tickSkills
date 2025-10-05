@@ -12,8 +12,8 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(DuplicateUsernameException.class)
-    public ResponseEntity<Object> handleDuplicateUsernameException(DuplicateUsernameException ex) {
+    @ExceptionHandler(TickSkillExceptions.class)
+    public ResponseEntity<Object> handleDuplicateUsernameException(TickSkillExceptions ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.CONFLICT.value());

@@ -24,4 +24,6 @@ public class UserDTO {
 
     @NotNull(message = "User type is required")
     private UserTypes userType;
+
+    private String photoUrl;
 }
