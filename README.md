@@ -64,6 +64,23 @@ The following are the available API endpoints:
 | `POST` | `/addBulkUsers`  | Adds multiple users.     | A list of `UserDTO` objects                | A list of usernames that were added.         |
 | `GET`  | `/getAllUsers`   | Retrieves all usernames. | -                                          | A list of all usernames in the database.     |
 
+### Questions endpoints
+
+The application exposes a set of endpoints to manage the question bank. All question endpoints are under the `/api/questions` base path.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/questions` | List questions (supports `categorySlug`, `difficulty`, `source`, `search`, `page`, `size`) |
+| `GET` | `/api/questions/randomCount/{count}` | Get random questions (default 10 when not provided) |
+| `GET` | `/api/questions/getSlug/{slug}` | Get question details by slug |
+| `POST` | `/api/questions/createQuestion` | Create a new question (body: `QuestionRequestDTO`) |
+| `PUT` | `/api/questions/updateSlug/{slug}` | Update question by slug (body: `QuestionRequestDTO`) |
+| `DELETE` | `/api/questions/deleteSlug/{slug}` | Delete question by slug |
+| `GET` | `/api/questions/getByTagSlug/{slug}` | Get questions by tag slug |
+| `GET` | `/api/questions/getByCategorySlug/{slug}` | Get questions by category slug |
+| `GET` | `/api/questions/listCategories` | List all categories |
+
+
 ### Example `UserDTO`
 
 ```json

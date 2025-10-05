@@ -11,7 +11,6 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-// ...existing imports...
 
 @RestController
 @RequestMapping("/api/questions")
@@ -37,49 +36,79 @@ public class QuestionsController {
         return ResponseEntity.ok(results);
     }
 
-    @GetMapping("/random")
-    public ResponseEntity<List<Question>> random(@RequestParam(defaultValue = "10") int count) {
-        return ResponseEntity.ok(questionsService.random(count));
+    // View Random 10 questions
+    @GetMapping("/random10")
+    public ResponseEntity<List<Question>> random10() {
+        return ResponseEntity.ok(questionsService.random10());
     }
 
-    @GetMapping("/tag/{slug}")
+    @GetMapping("/byTag/{slug}")
     public ResponseEntity<List<Question>> byTag(@PathVariable String slug) {
         return ResponseEntity.ok(questionsService.findByTagSlug(slug));
     }
 
-    @GetMapping("/category/{slug}")
+    // Find questions by Category
+    @GetMapping("/byCategory/{slug}")
     public ResponseEntity<List<Question>> byCategory(@PathVariable String slug) {
         return ResponseEntity.ok(questionsService.findByCategorySlug(slug));
     }
 
-    @GetMapping("/categories")
-    public ResponseEntity<List<Category>> categories() {
-        return ResponseEntity.ok(categoryRepository.findAll());
+    // Add category
+    @PostMapping("/addCategory")
+    public ResponseEntity<Category> addCategory(@RequestBody com.basuki.project.tickSkills.dtos.CategoryRequestDTO dto) {
+        Category c = questionsService.addCategory(dto.getName(), dto.getDescription());
+        return ResponseEntity.ok(c);
     }
 
-    @GetMapping("/{slug}")
+    // Find question by Slug
+    @GetMapping("/findBySlug/{slug}")
     public ResponseEntity<Question> get(@PathVariable String slug) {
-    Question q = questionsService.findBySlug(slug);
-    if (q == null) return ResponseEntity.notFound().build();
-    return ResponseEntity.ok(q);
+        Question q = questionsService.findBySlug(slug);
+        if (q == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(q);
     }
 
-    @PostMapping
+    // Create Question
+    @PostMapping("/create")
     public ResponseEntity<Question> create(@RequestBody QuestionRequestDTO request) {
         Question saved = questionsService.create(request);
         return ResponseEntity.ok(saved);
     }
 
-    @PutMapping("/{slug}")
+    // Update Question
+    @PutMapping("/update/{slug}")
     public ResponseEntity<Question> update(@PathVariable String slug, @RequestBody QuestionRequestDTO request) {
         Question updated = questionsService.update(slug, request);
         if (updated == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/{slug}")
+    // Delete question
+    @DeleteMapping("/delete/{slug}")
     public ResponseEntity<Void> delete(@PathVariable String slug) {
         questionsService.delete(slug);
         return ResponseEntity.noContent().build();
+    }
+
+    // Add or update slug
+    @PostMapping("/addSlug/{existingSlug}")
+    public ResponseEntity<Question> addSlug(@PathVariable String existingSlug, @RequestBody com.basuki.project.tickSkills.dtos.SlugUpdateDTO dto) {
+        Question q = questionsService.addOrUpdateSlug(existingSlug, dto.getSlug());
+        if (q == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(q);
+    }
+
+    // Update external URL
+    @PostMapping("/updateExternalUrl/{slug}")
+    public ResponseEntity<Question> updateExternalUrl(@PathVariable String slug, @RequestBody com.basuki.project.tickSkills.dtos.ExternalUrlDTO dto) {
+        Question q = questionsService.updateExternalUrl(slug, dto.getExternalUrl());
+        if (q == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(q);
+    }
+
+    // Find by difficulty
+    @GetMapping("/byDifficulty/{difficulty}")
+    public ResponseEntity<List<Question>> byDifficulty(@PathVariable String difficulty) {
+        return ResponseEntity.ok(questionsService.findByDifficulty(difficulty));
     }
 }

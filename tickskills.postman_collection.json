@@ -80,6 +80,138 @@
 			},
 			"response": []
 		}
+		,
+		{
+			"name": "Get Question by Slug",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/questions/getSlug/{slug}",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api","questions","getSlug","{slug}"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Question",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Example\",\n  \"description\": \"Example description\",\n  \"categorySlug\": \"array\",\n  \"tagSlugs\": [\"array\"]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/questions/createQuestion",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api","questions","createQuestion"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Question by Slug",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Updated title\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/questions/updateSlug/{slug}",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api","questions","updateSlug","{slug}"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Question by Slug",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/questions/deleteSlug/{slug}",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api","questions","deleteSlug","{slug}"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Random Questions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/questions/randomCount/10",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["api","questions","randomCount","10"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Question",
+			"request": {
+				"method": "POST",
+				"header": [{"key":"Content-Type","value":"application/json"}],
+				"body": {"mode":"raw","raw":"{\n  \"title\": \"Two Sum\",\n  \"externalUrl\": \"https://leetcode.com/problems/two-sum/\",\n  \"difficulty\": \"EASY\",\n  \"source\": \"LEETCODE\",\n  \"categorySlug\": \"arrays\"\n}"},
+				"url": {"raw":"http://localhost:8080/api/questions","protocol":"http","host":["localhost"],"port":"8080","path":["api","questions"]}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Question (updateSlug)",
+			"request": {
+				"method": "PUT",
+				"header": [{"key":"Content-Type","value":"application/json"}],
+				"body": {"mode":"raw","raw":"{\n  \"title\": \"Two Sum - Updated\"\n}"},
+				"url": {"raw":"http://localhost:8080/api/questions/updateSlug/{slug}","protocol":"http","host":["localhost"],"port":"8080","path":["api","questions","updateSlug","{slug}"]}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Question (deleteSlug)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {"raw":"http://localhost:8080/api/questions/deleteSlug/{slug}","protocol":"http","host":["localhost"],"port":"8080","path":["api","questions","deleteSlug","{slug}"]}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Random Questions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {"raw":"http://localhost:8080/api/questions/random?count=10","protocol":"http","host":["localhost"],"port":"8080","path":["api","questions","random"],"query":[{"key":"count","value":"10"}]}
+			},
+			"response": []
+		}
 	]
 }
 

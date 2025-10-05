@@ -15,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UsersService usersService;

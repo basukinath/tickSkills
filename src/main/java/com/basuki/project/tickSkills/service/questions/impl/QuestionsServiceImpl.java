@@ -111,4 +111,37 @@ public class QuestionsServiceImpl implements QuestionsService {
                 .filter(q -> q.getCategory() != null && categorySlug.equals(q.getCategory().getSlug()))
                 .toList();
     }
+
+    @Override
+    public Category addCategory(String name, String description) {
+        String slug = name.trim().toLowerCase().replaceAll("\\s+", "-");
+        Category c = categoryRepository.findBySlug(slug).orElseGet(() -> {
+            Category nc = new Category(); nc.setName(name); nc.setSlug(slug); nc.setDescription(description); return categoryRepository.save(nc);
+        });
+        return c;
+    }
+
+    @Override
+    public Question addOrUpdateSlug(String existingSlug, String newSlug) {
+        Question q = questionRepository.findBySlug(existingSlug).orElse(null);
+        if (q == null) return null;
+        q.setSlug(newSlug);
+        return questionRepository.save(q);
+    }
+
+    @Override
+    public Question updateExternalUrl(String slug, String externalUrl) {
+        Question q = questionRepository.findBySlug(slug).orElse(null);
+        if (q == null) return null;
+        q.setExternalUrl(externalUrl);
+        return questionRepository.save(q);
+    }
+
+    @Override
+    public List<Question> findByDifficulty(String difficulty) {
+        if (difficulty == null) return List.of();
+        return questionRepository.findAll().stream()
+                .filter(q -> q.getDifficulty() != null && difficulty.equalsIgnoreCase(q.getDifficulty().name()))
+                .toList();
+    }
 }
