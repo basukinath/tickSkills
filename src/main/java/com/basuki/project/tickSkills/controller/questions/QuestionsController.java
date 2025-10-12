@@ -25,14 +25,14 @@ public class QuestionsController {
 
     @GetMapping
     public ResponseEntity<Page<Question>> list(
-            @RequestParam(required = false) String categorySlug,
+            @RequestParam(required = false) String categoryName,
             @RequestParam(required = false) String difficulty,
             @RequestParam(required = false) String source,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "30") int size
     ) {
-        Page<Question> results = questionsService.list(categorySlug, difficulty, source, search, PageRequest.of(page, size));
+        Page<Question> results = questionsService.list(categoryName, difficulty, source, search, PageRequest.of(page, size));
         return ResponseEntity.ok(results);
     }
 
@@ -42,15 +42,21 @@ public class QuestionsController {
         return ResponseEntity.ok(questionsService.random10());
     }
 
-    @GetMapping("/byTag/{slug}")
-    public ResponseEntity<List<Question>> byTag(@PathVariable String slug) {
-        return ResponseEntity.ok(questionsService.findByTagSlug(slug));
+    @GetMapping("/byTag/{name}")
+    public ResponseEntity<List<Question>> byTag(@PathVariable String name) {
+        return ResponseEntity.ok(questionsService.findByTagName(name));
     }
 
     // Find questions by Category
-    @GetMapping("/byCategory/{slug}")
-    public ResponseEntity<List<Question>> byCategory(@PathVariable String slug) {
-        return ResponseEntity.ok(questionsService.findByCategorySlug(slug));
+    @GetMapping("/byCategory/{name}")
+    public ResponseEntity<List<Question>> byCategory(@PathVariable String name) {
+        return ResponseEntity.ok(questionsService.findByCategoryName(name));
+    }
+
+    // List all categories (for UI dropdown)
+    @GetMapping("/listCategories")
+    public ResponseEntity<List<Category>> listCategories() {
+        return ResponseEntity.ok(categoryRepository.findAll());
     }
 
     // Add category
@@ -60,10 +66,10 @@ public class QuestionsController {
         return ResponseEntity.ok(c);
     }
 
-    // Find question by Slug
-    @GetMapping("/findBySlug/{slug}")
-    public ResponseEntity<Question> get(@PathVariable String slug) {
-        Question q = questionsService.findBySlug(slug);
+    // Find question by ID
+    @GetMapping("/findById/{id}")
+    public ResponseEntity<Question> get(@PathVariable Long id) {
+        Question q = questionsService.findById(id);
         if (q == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(q);
     }
@@ -76,32 +82,24 @@ public class QuestionsController {
     }
 
     // Update Question
-    @PutMapping("/update/{slug}")
-    public ResponseEntity<Question> update(@PathVariable String slug, @RequestBody QuestionRequestDTO request) {
-        Question updated = questionsService.update(slug, request);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Question> update(@PathVariable Long id, @RequestBody QuestionRequestDTO request) {
+        Question updated = questionsService.update(id, request);
         if (updated == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(updated);
     }
 
     // Delete question
-    @DeleteMapping("/delete/{slug}")
-    public ResponseEntity<Void> delete(@PathVariable String slug) {
-        questionsService.delete(slug);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        questionsService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    // Add or update slug
-    @PostMapping("/addSlug/{existingSlug}")
-    public ResponseEntity<Question> addSlug(@PathVariable String existingSlug, @RequestBody com.basuki.project.tickSkills.dtos.SlugUpdateDTO dto) {
-        Question q = questionsService.addOrUpdateSlug(existingSlug, dto.getSlug());
-        if (q == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(q);
-    }
-
     // Update external URL
-    @PostMapping("/updateExternalUrl/{slug}")
-    public ResponseEntity<Question> updateExternalUrl(@PathVariable String slug, @RequestBody com.basuki.project.tickSkills.dtos.ExternalUrlDTO dto) {
-        Question q = questionsService.updateExternalUrl(slug, dto.getExternalUrl());
+    @PostMapping("/updateExternalUrl/{id}")
+    public ResponseEntity<Question> updateExternalUrl(@PathVariable Long id, @RequestBody com.basuki.project.tickSkills.dtos.ExternalUrlDTO dto) {
+        Question q = questionsService.updateExternalUrl(id, dto.getExternalUrl());
         if (q == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(q);
     }

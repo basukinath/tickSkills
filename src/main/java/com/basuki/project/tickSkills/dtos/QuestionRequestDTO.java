@@ -13,6 +13,5 @@ public class QuestionRequestDTO {
     private String category;
     private SourcePlatform source;
     private String externalUrl;
-    private boolean isPremium;
     private List<String> tags;
 }

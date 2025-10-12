@@ -1,25 +1,19 @@
 const apiBase = '/api/questions';
 let lastCategorySelected = null;
 
-// Helper function to show raw JSON in all response areas
+// Helper function to show raw JSON (works with both old and new UI)
 function showRaw(obj){
+  const rawElement = document.getElementById('raw');
+  const createResponse = document.getElementById('create_response');
+  const updateResponse = document.getElementById('update_response');
+  const deleteResponse = document.getElementById('delete_response');
+  
   const jsonStr = JSON.stringify(obj, null, 2);
   
-  // Update all raw response elements
-  const rawElements = [
-    'raw',
-    'home_raw',
-    'create_response',
-    'update_response',
-    'delete_response',
-    'browse_raw',
-    'categories_raw'
-  ];
-  
-  rawElements.forEach(id => {
-    const element = document.getElementById(id);
-    if (element) element.textContent = jsonStr;
-  });
+  if (rawElement) rawElement.textContent = jsonStr;
+  if (createResponse) createResponse.textContent = jsonStr;
+  if (updateResponse) updateResponse.textContent = jsonStr;
+  if (deleteResponse) deleteResponse.textContent = jsonStr;
 }
 
 async function createQuestion(){
@@ -127,7 +121,7 @@ async function loadRandom10(targetElementId = 'random_list'){
 async function loadCategories(){
   console.log('Loading categories...');
   try{
-    const res = await fetch(`${apiBase}/listCategories`);
+    const res = await fetch(`${apiBase}/categories/all`);
     if (!res.ok) {
       throw new Error(`HTTP ${res.status}: Failed to fetch categories`);
     }
@@ -152,17 +146,6 @@ async function loadCategories(){
         updateCategorySelect.innerHTML = '<option value="">-- keep current --</option>';
       } else {
         updateCategorySelect.innerHTML = '<option value="">-- keep current --</option>' + 
-          cats.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-      }
-    }
-    
-    // Populate browse page category select for search
-    const browseCategorySelect = document.getElementById('cat_select');
-    if (browseCategorySelect) {
-      if (cats.length === 0) {
-        browseCategorySelect.innerHTML = '<option value="">-- No categories available --</option>';
-      } else {
-        browseCategorySelect.innerHTML = '<option value="">-- SELECT --</option>' + 
           cats.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
       }
     }
@@ -239,102 +222,6 @@ async function loadQuestionsForCategory(categoryName){
   }
 }
 
-// Search for question to preview before updating
-async function searchQuestionForUpdate() {
-  const id = document.getElementById('upd_id').value;
-  if (!id) {
-    alert('Please enter a Question ID');
-    return;
-  }
-  
-  try {
-    const res = await fetch(`${apiBase}/findById/${encodeURIComponent(id)}`);
-    if (!res.ok) {
-      if (res.status === 404) {
-        showQuestionNotFound();
-        return;
-      }
-      throw new Error(`HTTP ${res.status}`);
-    }
-    const data = await res.json();
-    showQuestionPreview(data);
-  } catch(e) {
-    console.error('Failed to search question:', e);
-    alert('Error searching for question: ' + e.message);
-  }
-}
-
-// Show question preview modal
-function showQuestionPreview(question) {
-  // Hide not found modal if visible
-  document.getElementById('question_notfound_modal').style.display = 'none';
-  
-  // Hide update form
-  document.getElementById('update_form_fields').style.display = 'none';
-  
-  // Build preview content
-  const previewContent = document.getElementById('question_preview_content');
-  previewContent.innerHTML = `
-    <div style="display: grid; gap: 12px;">
-      <div>
-        <strong style="color: #667eea;">ID:</strong> 
-        <span style="color: #2d3748;">${question.id}</span>
-      </div>
-      <div>
-        <strong style="color: #667eea;">Title:</strong> 
-        <span style="color: #2d3748;">${question.title || '—'}</span>
-      </div>
-      <div>
-        <strong style="color: #667eea;">Category:</strong> 
-        <span style="color: #2d3748;">${question.category ? question.category.name : '—'}</span>
-      </div>
-      <div>
-        <strong style="color: #667eea;">Difficulty:</strong> 
-        <span style="color: #2d3748;">${question.difficulty || '—'}</span>
-      </div>
-      <div>
-        <strong style="color: #667eea;">Source:</strong> 
-        <span style="color: #2d3748;">${question.source || '—'}</span>
-      </div>
-      <div>
-        <strong style="color: #667eea;">External URL:</strong> 
-        ${question.externalUrl ? `<a href="${question.externalUrl}" target="_blank" style="color: #667eea;">🔗 ${question.externalUrl}</a>` : '<span style="color: #718096;">—</span>'}
-      </div>
-      <div>
-        <strong style="color: #667eea;">Tags:</strong> 
-        <span style="color: #2d3748;">${question.tags && question.tags.length > 0 ? question.tags.map(t => t.name).join(', ') : '—'}</span>
-      </div>
-    </div>
-  `;
-  
-  // Show preview modal
-  document.getElementById('question_preview_modal').style.display = 'block';
-}
-
-// Show question not found modal
-function showQuestionNotFound() {
-  // Hide preview modal if visible
-  document.getElementById('question_preview_modal').style.display = 'none';
-  
-  // Hide update form
-  document.getElementById('update_form_fields').style.display = 'none';
-  
-  // Show not found modal
-  document.getElementById('question_notfound_modal').style.display = 'block';
-}
-
-// Close preview and show update form
-function closePreviewAndShowForm() {
-  document.getElementById('question_preview_modal').style.display = 'none';
-  document.getElementById('update_form_fields').style.display = 'block';
-}
-
-// Close not found modal
-function closeNotFoundModal() {
-  document.getElementById('question_notfound_modal').style.display = 'none';
-  document.getElementById('upd_id').value = ''; // Clear the invalid ID
-}
-
 async function updateQuestion(){
   const id = document.getElementById('upd_id').value;
   if (!id) {
@@ -373,7 +260,7 @@ async function updateQuestion(){
     showRaw(data);
     alert('Question updated successfully!');
     
-    // Clear form and hide update form
+    // Clear form
     document.getElementById('upd_id').value = '';
     document.getElementById('upd_title').value = '';
     document.getElementById('upd_category').selectedIndex = 0;
@@ -381,9 +268,6 @@ async function updateQuestion(){
     document.getElementById('upd_source').selectedIndex = 0;
     document.getElementById('upd_url').value = '';
     document.getElementById('upd_tags').value = '';
-    
-    // Hide the form fields after successful update
-    document.getElementById('update_form_fields').style.display = 'none';
   } catch(e) {
     console.error('Failed to update question:', e);
     alert('Failed to update question: ' + e.message);
@@ -429,7 +313,7 @@ async function addCategory(){
   }
   
   try {
-    const res = await fetch(`${apiBase}/addCategory`, {
+    const res = await fetch(`${apiBase}/categories/add`, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({name, description})
@@ -453,73 +337,12 @@ async function addCategory(){
   }
 }
 
-// Reset all search controls to default
-function resetSearchControls() {
-  document.getElementById('cat_select').value = '';
-  document.getElementById('diff_select').value = '';
-  document.getElementById('id_search').value = '';
-}
-
-async function findByCategory(){
-  const category = document.getElementById('cat_select').value;
-  if (!category) {
-    alert('Please select a category');
-    return;
-  }
-  
-  // Reset other search controls
-  document.getElementById('diff_select').value = '';
-  document.getElementById('id_search').value = '';
-  
-  try {
-    const res = await fetch(`${apiBase}/byCategory/${encodeURIComponent(category)}`);
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
-    const data = await res.json();
-    
-    const listDiv = document.getElementById('search_results');
-    if (data.length === 0) {
-      listDiv.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div><p>No questions found in "${category}" category</p></div>`;
-    } else {
-      listDiv.innerHTML = data.map(q => `
-        <div class="question-item">
-          <div>
-            <div class="question-title">${q.title}</div>
-            <div class="question-meta">
-              ID: ${q.id}
-              ${q.difficulty ? ` • ${q.difficulty}` : ''}
-              ${q.source ? ` • ${q.source}` : ''}
-            </div>
-          </div>
-          ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link">🔗</a>` : ''}
-        </div>
-      `).join('');
-    }
-    showRaw(data);
-  } catch(e) {
-    console.error('Failed to find questions by category:', e);
-    const listDiv = document.getElementById('search_results');
-    listDiv.innerHTML = `<div style="padding:12px;color:#d32f2f">Error: ${e.message}</div>`;
-    showRaw({error: e.message});
-  }
-}
-
 async function findByDifficulty(){
   const difficulty = document.getElementById('diff_select').value;
-  if (!difficulty) {
-    alert('Please select a difficulty');
-    return;
-  }
-  
-  // Reset other search controls
-  document.getElementById('cat_select').value = '';
-  document.getElementById('id_search').value = '';
-  
   const res = await fetch(`${apiBase}/byDifficulty/${encodeURIComponent(difficulty)}`);
   const data = await res.json();
   
-  const listDiv = document.getElementById('search_results');
+  const listDiv = document.getElementById('diff_list');
   if (data.length === 0) {
     listDiv.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No questions found for this difficulty</p></div>';
   } else {
@@ -538,51 +361,6 @@ async function findByDifficulty(){
     `).join('');
   }
   showRaw(data);
-}
-
-async function findById(){
-  const id = document.getElementById('id_search').value;
-  if (!id) {
-    alert('Question ID is required');
-    return;
-  }
-  
-  // Reset other search controls
-  document.getElementById('cat_select').value = '';
-  document.getElementById('diff_select').value = '';
-  
-  try {
-    const res = await fetch(`${apiBase}/findById/${encodeURIComponent(id)}`);
-    if (!res.ok) {
-      if (res.status === 404) {
-        throw new Error('Question not found');
-      }
-      throw new Error(`HTTP ${res.status}`);
-    }
-    const data = await res.json();
-    
-    const listDiv = document.getElementById('search_results');
-    listDiv.innerHTML = `
-      <div class="question-item">
-        <div>
-          <div class="question-title">${data.title}</div>
-          <div class="question-meta">
-            ID: ${data.id}
-            ${data.category ? ` • ${data.category.name}` : ''}
-            ${data.difficulty ? ` • ${data.difficulty}` : ''}
-            ${data.source ? ` • ${data.source}` : ''}
-          </div>
-        </div>
-        ${data.externalUrl ? `<a href="${data.externalUrl}" target="_blank" class="link-icon" title="Open question link">🔗</a>` : ''}
-      </div>
-    `;
-    showRaw(data);
-  } catch(e) {
-    console.error('Failed to find question by ID:', e);
-    const listDiv = document.getElementById('search_results');
-    listDiv.innerHTML = `<div style="padding:12px;color:#d32f2f">${e.message}</div>`;
-    showRaw({error: e.message});
-  }
 }
 
 // Event listeners
@@ -605,15 +383,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   // Update page
-  const btnSearchQuestion = document.getElementById('btn_search_question');
-  if (btnSearchQuestion) btnSearchQuestion.addEventListener('click', searchQuestionForUpdate);
-  
-  const btnClosePreview = document.getElementById('btn_close_preview');
-  if (btnClosePreview) btnClosePreview.addEventListener('click', closePreviewAndShowForm);
-  
-  const btnCloseNotFound = document.getElementById('btn_close_notfound');
-  if (btnCloseNotFound) btnCloseNotFound.addEventListener('click', closeNotFoundModal);
-  
   const btnUpdate = document.getElementById('btn_update');
   if (btnUpdate) btnUpdate.addEventListener('click', updateQuestion);
   
@@ -628,15 +397,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnRefreshCategories = document.getElementById('btn_refresh_categories');
   if (btnRefreshCategories) btnRefreshCategories.addEventListener('click', loadCategories);
   
-  // Search functionality on Browse page
-  const btnFindCat = document.getElementById('btn_find_cat');
-  if (btnFindCat) btnFindCat.addEventListener('click', findByCategory);
-  
+  // Search page
   const btnFindDiff = document.getElementById('btn_find_diff');
   if (btnFindDiff) btnFindDiff.addEventListener('click', findByDifficulty);
-  
-  const btnFindById = document.getElementById('btn_find_id');
-  if (btnFindById) btnFindById.addEventListener('click', findById);
   
   // Initialize - load categories
   loadCategories();

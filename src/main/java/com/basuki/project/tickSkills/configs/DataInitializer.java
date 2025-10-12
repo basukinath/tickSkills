@@ -60,14 +60,12 @@ public class DataInitializer implements CommandLineRunner {
 		for (Map<String, Object> it : items) {
 			String categoryName = (String) it.get("category");
 			if (categoryName != null) {
-				String slug = categoryName.trim().toLowerCase().replaceAll("\\s+", "-");
-				Category cat = categoryRepository.findBySlug(slug).orElseGet(() -> {
+				Category cat = categoryRepository.findByName(categoryName).orElseGet(() -> {
 					Category c = new Category();
 					c.setName(categoryName);
-					c.setSlug(slug);
 					return categoryRepository.save(c);
 				});
-				categoryCache.putIfAbsent(slug, cat);
+				categoryCache.putIfAbsent(categoryName, cat);
 			}
 
 			Object tagsObj = it.get("tags");
@@ -80,17 +78,17 @@ public class DataInitializer implements CommandLineRunner {
 
 			Set<Tag> tagEntities = new HashSet<>();
 			for (String tname : tags) {
-				String tsl = tname.trim().toLowerCase().replaceAll("\\s+", "-");
-				Tag tag = tagRepository.findBySlug(tsl).orElseGet(() -> {
-					Tag nt = new Tag(); nt.setName(tname); nt.setSlug(tsl); return tagRepository.save(nt);
+				Tag tag = tagRepository.findByName(tname).orElseGet(() -> {
+					Tag nt = new Tag(); 
+					nt.setName(tname); 
+					return tagRepository.save(nt);
 				});
 				tagEntities.add(tag);
-				tagCache.putIfAbsent(tsl, tag);
+				tagCache.putIfAbsent(tname, tag);
 			}
 
 			Question q = new Question();
 			q.setTitle((String) it.get("title"));
-			q.setSlug((String) it.get("slug"));
 			String diff = (String) it.get("difficulty");
 			if (diff != null) {
 				try {
@@ -99,8 +97,7 @@ public class DataInitializer implements CommandLineRunner {
 			}
 			String catName = (String) it.get("category");
 			if (catName != null) {
-				String cslug = catName.trim().toLowerCase().replaceAll("\\s+", "-");
-				q.setCategory(categoryCache.get(cslug));
+				q.setCategory(categoryCache.get(catName));
 			}
 			String source = (String) it.get("source");
 			if (source != null) {
@@ -116,9 +113,9 @@ public class DataInitializer implements CommandLineRunner {
 			q.setPremium(it.get("is_premium") == null ? false : Boolean.TRUE.equals(it.get("is_premium")));
 			q.setTags(tagEntities);
 
-			// avoid duplicates by slug
-			String slug = q.getSlug();
-			if (slug != null && questionRepository.findBySlug(slug).isPresent()) continue;
+			// avoid duplicates by title
+			String title = q.getTitle();
+			if (title != null && questionRepository.findByTitle(title).isPresent()) continue;
 			questionRepository.save(q);
 		}
 	}

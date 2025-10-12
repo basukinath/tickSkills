@@ -278,63 +278,6 @@
       margin-bottom: 16px;
     }
     
-    .collapsible-section {
-      margin-top: 24px;
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    
-    .collapsible-header {
-      background: #f7fafc;
-      padding: 12px 16px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 600;
-      color: #2d3748;
-      transition: background 0.2s;
-    }
-    
-    .collapsible-header:hover {
-      background: #edf2f7;
-    }
-    
-    .collapsible-header .arrow {
-      transition: transform 0.2s;
-    }
-    
-    .collapsible-header.active .arrow {
-      transform: rotate(180deg);
-    }
-    
-    .collapsible-content {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease-out;
-    }
-    
-    .collapsible-content.active {
-      max-height: 600px;
-      overflow-y: auto;
-    }
-    
-    .collapsible-content pre {
-      margin: 16px;
-      border-radius: 6px;
-    }
-    
-    .clickable-card {
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    .clickable-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    }
-    
     @media (max-width: 768px) {
       .form-grid {
         grid-template-columns: 1fr;
@@ -346,18 +289,6 @@
       
       .nav-links a {
         text-align: center;
-      }
-      
-      /* Make search grid single column on mobile */
-      #browse .page > div:first-of-type > div {
-        grid-template-columns: 1fr !important;
-      }
-    }
-    
-    @media (max-width: 1024px) and (min-width: 769px) {
-      /* Make search grid 2 columns on tablets */
-      #browse .page > div:first-of-type > div {
-        grid-template-columns: 1fr 1fr !important;
       }
     }
   </style>
@@ -373,10 +304,11 @@
       <div class="nav-links">
         <a href="#home" class="nav-link active" data-page="home">🏠 Home</a>
         <a href="#create" class="nav-link" data-page="create">➕ Create Question</a>
-        <a href="#browse" class="nav-link" data-page="browse">📚 Browse & Search</a>
+        <a href="#browse" class="nav-link" data-page="browse">📚 Browse Questions</a>
         <a href="#update" class="nav-link" data-page="update">✏️ Update Question</a>
         <a href="#delete" class="nav-link" data-page="delete">🗑️ Delete Question</a>
         <a href="#categories" class="nav-link" data-page="categories">📁 Categories</a>
+        <a href="#search" class="nav-link" data-page="search">🔍 Search</a>
       </div>
     </nav>
     
@@ -388,22 +320,18 @@
           <strong>Quick Start:</strong> Use the navigation above to manage your coding questions.
         </div>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 24px;">
-          <div class="clickable-card" data-goto="create" style="padding: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 24px;">
+          <div style="padding: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px;">
             <h3 style="margin-bottom: 8px; color: white;">Create</h3>
             <p style="opacity: 0.9; font-size: 14px;">Add new coding questions</p>
           </div>
-          <div class="clickable-card" data-goto="browse" style="padding: 24px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border-radius: 12px;">
+          <div style="padding: 24px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border-radius: 12px;">
             <h3 style="margin-bottom: 8px; color: white;">Browse</h3>
             <p style="opacity: 0.9; font-size: 14px;">View and explore questions</p>
           </div>
-          <div class="clickable-card" data-goto="update" style="padding: 24px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border-radius: 12px;">
-            <h3 style="margin-bottom: 8px; color: white;">Update</h3>
-            <p style="opacity: 0.9; font-size: 14px;">Edit existing questions</p>
-          </div>
-          <div class="clickable-card" data-goto="delete" style="padding: 24px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; border-radius: 12px;">
-            <h3 style="margin-bottom: 8px; color: white;">Delete</h3>
-            <p style="opacity: 0.9; font-size: 14px;">Remove questions</p>
+          <div style="padding: 24px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border-radius: 12px;">
+            <h3 style="margin-bottom: 8px; color: white;">Manage</h3>
+            <p style="opacity: 0.9; font-size: 14px;">Update and organize</p>
           </div>
         </div>
         
@@ -411,17 +339,6 @@
           <h3>📊 Recent Activity</h3>
           <button id="btn_home_random" style="margin-bottom: 16px;">Load Random 10 Questions</button>
           <div id="home_random_list"></div>
-        </div>
-        
-        <!-- Collapsible Raw Response -->
-        <div class="collapsible-section">
-          <div class="collapsible-header" onclick="toggleCollapsible(this)">
-            <span>📄 Raw Response</span>
-            <span class="arrow">▼</span>
-          </div>
-          <div class="collapsible-content">
-            <pre id="home_raw">(responses will appear here)</pre>
-          </div>
         </div>
       </div>
       
@@ -478,62 +395,17 @@
           </div>
         </div>
         
-        <!-- Collapsible Raw Response -->
-        <div class="collapsible-section">
-          <div class="collapsible-header" onclick="toggleCollapsible(this)">
-            <span>📄 Raw Response</span>
-            <span class="arrow">▼</span>
-          </div>
-          <div class="collapsible-content">
-            <pre id="create_response">(Response will appear here)</pre>
-          </div>
+        <div class="result-box">
+          <h3>Response</h3>
+          <pre id="create_response">(Response will appear here)</pre>
         </div>
       </div>
       
       <!-- Browse Questions Page -->
       <div id="browse" class="page">
-        <h2 style="margin-bottom: 24px; color: #2d3748;">Browse & Search Questions</h2>
+        <h2 style="margin-bottom: 24px; color: #2d3748;">Browse Questions</h2>
         
-        <!-- Search Section -->
-        <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
-          <h3 style="margin-bottom: 16px; color: #2d3748;">🔍 Search Questions</h3>
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;">
-            <div>
-              <label>Search by Category</label>
-              <select id="cat_select">
-                <option value="">-- SELECT --</option>
-              </select>
-              <button id="btn_find_cat">Search</button>
-            </div>
-            
-            <div>
-              <label>Search by Difficulty</label>
-              <select id="diff_select">
-                <option value="">-- SELECT --</option>
-                <option value="EASY">EASY</option>
-                <option value="MEDIUM">MEDIUM</option>
-                <option value="HARD">HARD</option>
-              </select>
-              <button id="btn_find_diff">Search</button>
-            </div>
-            
-            <div>
-              <label>Search by Question ID</label>
-              <input id="id_search" type="number" placeholder="Enter question ID" />
-              <button id="btn_find_id">Search</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Common Search Results Section -->
-        <div class="result-box" style="margin-bottom: 24px;">
-          <h3>Search Results</h3>
-          <div id="search_results"></div>
-        </div>
-        
-        <!-- Browse Random Section -->
         <div style="margin-bottom: 24px;">
-          <h3 style="margin-bottom: 12px; color: #2d3748;">📚 Random Questions</h3>
           <button id="btn_random">🎲 Load Random 10</button>
           <button id="btn_refresh_browse" class="secondary" style="margin-left: 8px;">↻ Refresh</button>
         </div>
@@ -542,17 +414,6 @@
           <h3>Questions</h3>
           <div id="random_list"></div>
         </div>
-        
-        <!-- Collapsible Raw Response -->
-        <div class="collapsible-section">
-          <div class="collapsible-header" onclick="toggleCollapsible(this)">
-            <span>📄 Raw Response</span>
-            <span class="arrow">▼</span>
-          </div>
-          <div class="collapsible-content">
-            <pre id="browse_raw">(Response will appear here)</pre>
-          </div>
-        </div>
       </div>
       
       <!-- Update Question Page -->
@@ -560,44 +421,14 @@
         <h2 style="margin-bottom: 24px; color: #2d3748;">Update Question</h2>
         
         <div class="alert alert-info">
-          <strong>Tip:</strong> First search for the question to verify it exists, then update the fields you want to change.
+          <strong>Tip:</strong> Leave fields blank to keep current values.
         </div>
         
-        <!-- Question ID Search Section -->
-        <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
-          <label>Question ID to Update *</label>
-          <div style="display: flex; gap: 12px; align-items: flex-end;">
-            <div style="flex: 1;">
-              <input id="upd_id" type="number" placeholder="Enter question ID" />
-            </div>
-            <button id="btn_search_question" style="height: 48px; min-width: 120px;">🔍 Search</button>
-          </div>
-        </div>
-        
-        <!-- Question Preview Modal (initially hidden) -->
-        <div id="question_preview_modal" style="display: none; background: white; border: 2px solid #667eea; border-radius: 8px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
-            <h3 style="margin: 0; color: #667eea;">📋 Question Found</h3>
-            <button id="btn_close_preview" style="background: #e53e3e; padding: 8px 16px; min-width: auto;">✕ Close</button>
-          </div>
-          <div id="question_preview_content"></div>
-          <div style="margin-top: 16px; padding: 12px; background: #f7fafc; border-radius: 4px; border-left: 4px solid #667eea;">
-            <strong>👇 Close this preview to edit the question fields below</strong>
-          </div>
-        </div>
-        
-        <!-- Question Not Found Modal (initially hidden) -->
-        <div id="question_notfound_modal" style="display: none; background: #fff5f5; border: 2px solid #e53e3e; border-radius: 8px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
-            <h3 style="margin: 0; color: #e53e3e;">❌ Question Not Found</h3>
-            <button id="btn_close_notfound" style="background: #718096; padding: 8px 16px; min-width: auto;">✕ Close</button>
-          </div>
-          <p style="margin: 0; color: #2d3748;">The question with the specified ID does not exist. Please check the ID and try again.</p>
-        </div>
-        
-        <!-- Update Form Fields (initially hidden until question is found and preview closed) -->
-        <div id="update_form_fields" style="display: none;">
         <div class="form-grid">
+          <div class="full-width">
+            <label>Question ID to Update *</label>
+            <input id="upd_id" type="number" placeholder="e.g., 1" />
+          </div>
           
           <div class="full-width">
             <label>New Title</label>
@@ -648,17 +479,10 @@
             <button id="btn_update">Update Question</button>
           </div>
         </div>
-        </div>
         
-        <!-- Collapsible Raw Response -->
-        <div class="collapsible-section">
-          <div class="collapsible-header" onclick="toggleCollapsible(this)">
-            <span>📄 Raw Response</span>
-            <span class="arrow">▼</span>
-          </div>
-          <div class="collapsible-content">
-            <pre id="update_response">(Response will appear here)</pre>
-          </div>
+        <div class="result-box">
+          <h3>Response</h3>
+          <pre id="update_response">(Response will appear here)</pre>
         </div>
       </div>
       
@@ -676,15 +500,9 @@
           <button id="btn_delete" class="danger">Delete Question</button>
         </div>
         
-        <!-- Collapsible Raw Response -->
-        <div class="collapsible-section">
-          <div class="collapsible-header" onclick="toggleCollapsible(this)">
-            <span>📄 Raw Response</span>
-            <span class="arrow">▼</span>
-          </div>
-          <div class="collapsible-content">
-            <pre id="delete_response">(Response will appear here)</pre>
-          </div>
+        <div class="result-box">
+          <h3>Response</h3>
+          <pre id="delete_response">(Response will appear here)</pre>
         </div>
       </div>
       
@@ -728,41 +546,32 @@
             </div>
           </div>
         </div>
+      </div>
+      
+      <!-- Search Page -->
+      <div id="search" class="page">
+        <h2 style="margin-bottom: 24px; color: #2d3748;">Search Questions</h2>
         
-        <!-- Collapsible Raw Response -->
-        <div class="collapsible-section">
-          <div class="collapsible-header" onclick="toggleCollapsible(this)">
-            <span>📄 Raw Response</span>
-            <span class="arrow">▼</span>
-          </div>
-          <div class="collapsible-content">
-            <pre id="categories_raw">(Response will appear here)</pre>
-          </div>
+        <div style="max-width: 400px; margin-bottom: 24px;">
+          <label>Search by Difficulty</label>
+          <select id="diff_select">
+            <option value="EASY">EASY</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="HARD">HARD</option>
+          </select>
+          <button id="btn_find_diff">Search</button>
+        </div>
+        
+        <div class="result-box">
+          <h3>Search Results</h3>
+          <div id="diff_list"></div>
         </div>
       </div>
     </div>
   </div>
   
-  <script src="/app.js"></script>
+  <script src="/app-new.js"></script>
   <script>
-    // Collapsible toggle function
-    function toggleCollapsible(header) {
-      header.classList.toggle('active');
-      const content = header.nextElementSibling;
-      content.classList.toggle('active');
-    }
-    
-    // Clickable card navigation
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.clickable-card').forEach(card => {
-        card.addEventListener('click', () => {
-          const targetPage = card.dataset.goto;
-          const link = document.querySelector(`[data-page="${targetPage}"]`);
-          if (link) link.click();
-        });
-      });
-    });
-    
     // Page navigation
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', (e) => {

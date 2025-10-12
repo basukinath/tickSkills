@@ -20,9 +20,6 @@ public class Question {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, unique = true)
-    private String slug;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Difficulty difficulty;

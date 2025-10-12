@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TickSkills - Questions UI</title>
+  <link rel="stylesheet" href="/app.css">
+  <style>
+    /* Minimal inline fallback styling if app.css isn't served */
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;padding:16px;background:#f7fafc}
+    .wrap{max-width:1000px;margin:0 auto;background:#fff;padding:18px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    h1{margin-top:0}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{display:block;font-weight:600;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:8px;border:1px solid #dfe3e8;border-radius:6px}
+    button{background:#0366d6;color:#fff;padding:8px 12px;border-radius:6px;border:none;cursor:pointer}
+    pre{background:#0b1220;color:#e6eef8;padding:12px;border-radius:6px;overflow:auto}
+    .small{font-size:13px;color:#666}
+    .section{margin-bottom:16px;padding:12px;border:1px dashed #e3e7ee;border-radius:6px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Questions - Admin UI</h1>
+    <p class="small">This UI maps to the server endpoints under <code>/api/questions</code>. Replace values and click the buttons to exercise the API.</p>
+
+    <div class="grid">
+      <div class="section">
+        <h3>Create Question</h3>
+        <label>Title *</label>
+        <input id="q_title" placeholder="e.g., Two Sum" />
+        <label>Category *</label>
+        <select id="q_category">
+          <option value="">-- Loading categories... --</option>
+        </select>
+        <label>Difficulty</label>
+        <select id="q_difficulty">
+          <option value="EASY">EASY</option>
+          <option value="MEDIUM" selected>MEDIUM</option>
+          <option value="HARD">HARD</option>
+        </select>
+        <label>Source Platform</label>
+        <select id="q_source">
+          <option value="LEETCODE" selected>LEETCODE</option>
+          <option value="HACKERRANK">HACKERRANK</option>
+          <option value="CODEFORCES">CODEFORCES</option>
+          <option value="ATCODER">ATCODER</option>
+          <option value="GFG">GFG</option>
+          <option value="CUSTOM">CUSTOM</option>
+        </select>
+        <label>External URL</label>
+        <input id="q_url" placeholder="https://leetcode.com/problems/two-sum" />
+        <label>Tags (comma separated)</label>
+        <input id="q_tags" placeholder="array, hash-table, two-pointers" />
+        <br/>
+        <button id="btn_create">Create Question</button>
+      </div>
+
+      <div class="section">
+        <h3>Random 10</h3>
+        <button id="btn_random">Load Random 10</button>
+        <div id="random_list"></div>
+      </div>
+
+      <div class="section">
+        <h3>Find by Category</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:14px;color:#666">Click a category to load its questions</span>
+          <button id="btn_refresh_categories" title="Reload categories from server" style="padding:6px 10px">↻ Refresh</button>
+        </div>
+        <div id="categories_table" style="max-height:300px;overflow-y:auto;border:1px solid #e3e7ee;border-radius:6px">
+          <table style="width:100%;border-collapse:collapse">
+            <thead style="position:sticky;top:0;background:#f7fafc;border-bottom:2px solid #dfe3e8">
+              <tr>
+                <th style="padding:8px;text-align:left;font-weight:600">Name</th>
+                <th style="padding:8px;text-align:left;font-weight:600">Description</th>
+              </tr>
+            </thead>
+            <tbody id="categories_tbody">
+              <tr><td colspan="2" style="padding:12px;text-align:center;color:#999">Loading categories...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px">
+          <h4 style="margin:8px 0">Questions in selected category:</h4>
+          <div id="by_cat_list" style="max-height:200px;overflow-y:auto"></div>
+        </div>
+      </div>
+
+      <!-- Find by Slug removed -->
+
+      <div class="section">
+        <h3>Update Question</h3>
+        <label>Question ID to Update *</label>
+        <input id="upd_id" type="number" placeholder="e.g., 1" />
+        <label>New Title</label>
+        <input id="upd_title" placeholder="Leave blank to keep current" />
+        <label>Category</label>
+        <select id="upd_category">
+          <option value="">-- keep current --</option>
+        </select>
+        <label>Difficulty</label>
+        <select id="upd_difficulty">
+          <option value="">-- keep current --</option>
+          <option value="EASY">EASY</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="HARD">HARD</option>
+        </select>
+        <label>Source Platform</label>
+        <select id="upd_source">
+          <option value="">-- keep current --</option>
+          <option value="LEETCODE">LEETCODE</option>
+          <option value="HACKERRANK">HACKERRANK</option>
+          <option value="CODEFORCES">CODEFORCES</option>
+          <option value="ATCODER">ATCODER</option>
+          <option value="GFG">GFG</option>
+          <option value="CUSTOM">CUSTOM</option>
+        </select>
+        <label>External URL</label>
+        <input id="upd_url" placeholder="Leave blank to keep current" />
+        <label>Tags (comma separated)</label>
+        <input id="upd_tags" placeholder="Leave blank to keep current" />
+        <br/>
+        <button id="btn_update">Update Question</button>
+      </div>
+
+      <div class="section">
+        <h3>Delete Question</h3>
+        <label>Question ID</label>
+        <input id="del_id" type="number" />
+        <button id="btn_delete">Delete</button>
+      </div>
+
+      <div class="section">
+        <h3>Add Category</h3>
+        <label>Name</label>
+        <input id="cat_name" />
+        <label>Description</label>
+        <input id="cat_desc" />
+        <button id="btn_add_cat">Add</button>
+      </div>
+
+      <!-- Add / Update Slug removed -->
+
+      <!-- Update External URL removed -->
+
+      <div class="section">
+        <h3>Find by Difficulty</h3>
+        <select id="diff_select">
+          <option value="EASY">EASY</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="HARD">HARD</option>
+        </select>
+        <button id="btn_find_diff">Find</button>
+        <div id="diff_list"></div>
+      </div>
+    </div>
+
+    <hr />
+    <h3>Raw Response</h3>
+    <pre id="raw">(responses will appear here)</pre>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

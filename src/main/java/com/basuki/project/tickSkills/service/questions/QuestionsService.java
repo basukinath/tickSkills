@@ -9,18 +9,17 @@ import java.util.List;
 
 public interface QuestionsService {
     Question create(QuestionRequestDTO request);
-    Question update(String slug, QuestionRequestDTO request);
-    void delete(String slug);
-    Question findBySlug(String slug);
-    Page<Question> list(String categorySlug, String difficulty, String source, String search, Pageable pageable);
+    Question update(Long id, QuestionRequestDTO request);
+    void delete(Long id);
+    Question findById(Long id);
+    Page<Question> list(String categoryName, String difficulty, String source, String search, Pageable pageable);
     List<Question> random(int count);
     // convenience to get 10 random questions
     default List<Question> random10() { return random(10); }
-    List<Question> findByTagSlug(String tagSlug);
-    List<Question> findByCategorySlug(String categorySlug);
+    List<Question> findByTagName(String tagName);
+    List<Question> findByCategoryName(String categoryName);
     // new operations
     Category addCategory(String name, String description);
-    Question addOrUpdateSlug(String existingSlug, String newSlug);
-    Question updateExternalUrl(String slug, String externalUrl);
+    Question updateExternalUrl(Long id, String externalUrl);
     List<Question> findByDifficulty(String difficulty);
 }

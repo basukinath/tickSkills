@@ -34,24 +34,28 @@ public class QuestionsServiceImpl implements QuestionsService {
     public Question create(QuestionRequestDTO request) {
         Question q = new Question();
         q.setTitle(request.getTitle());
-        q.setSlug(request.getTitle().toLowerCase().replaceAll("\\s+", "-"));
         if (request.getDifficulty() != null) q.setDifficulty(request.getDifficulty());
         if (request.getCategory() != null) {
-            String slug = request.getCategory().trim().toLowerCase().replaceAll("\\s+", "-");
-            Category c = categoryRepository.findBySlug(slug).orElseGet(() -> {
-                Category nc = new Category(); nc.setName(request.getCategory()); nc.setSlug(slug); return categoryRepository.save(nc);
-            });
+            Category c = categoryRepository.findByName(request.getCategory())
+                .orElseGet(() -> {
+                    Category nc = new Category(); 
+                    nc.setName(request.getCategory()); 
+                    return categoryRepository.save(nc);
+                });
             q.setCategory(c);
         }
         if (request.getSource() != null) q.setSource(request.getSource());
         q.setExternalUrl(request.getExternalUrl());
-        q.setPremium(request.isPremium());
 
         Set<Tag> tags = new HashSet<>();
         if (request.getTags() != null) {
             for (String t : request.getTags()) {
-                String slug = t.trim().toLowerCase().replaceAll("\\s+", "-");
-                Tag tag = tagRepository.findBySlug(slug).orElseGet(() -> { Tag nt = new Tag(); nt.setName(t); nt.setSlug(slug); return tagRepository.save(nt); });
+                Tag tag = tagRepository.findByName(t)
+                    .orElseGet(() -> { 
+                        Tag nt = new Tag(); 
+                        nt.setName(t); 
+                        return tagRepository.save(nt); 
+                    });
                 tags.add(tag);
             }
         }
@@ -60,34 +64,60 @@ public class QuestionsServiceImpl implements QuestionsService {
     }
 
     @Override
-    public Question update(String slug, QuestionRequestDTO request) {
-        Question existing = questionRepository.findBySlug(slug).orElse(null);
+    public Question update(Long id, QuestionRequestDTO request) {
+        Question existing = questionRepository.findById(id).orElse(null);
         if (existing == null) return null;
-        existing.setTitle(request.getTitle());
-        existing.setSlug(request.getTitle().toLowerCase().replaceAll("\\s+", "-"));
-        if (request.getDifficulty() != null) existing.setDifficulty(request.getDifficulty());
-        if (request.getCategory() != null) {
-            String cslug = request.getCategory().trim().toLowerCase().replaceAll("\\s+", "-");
-            Category c = categoryRepository.findBySlug(cslug).orElseGet(() -> { Category nc = new Category(); nc.setName(request.getCategory()); nc.setSlug(cslug); return categoryRepository.save(nc); });
+        
+        // Only update fields that are provided (not null)
+        if (request.getTitle() != null && !request.getTitle().trim().isEmpty()) {
+            existing.setTitle(request.getTitle());
+        }
+        if (request.getDifficulty() != null) {
+            existing.setDifficulty(request.getDifficulty());
+        }
+        if (request.getCategory() != null && !request.getCategory().trim().isEmpty()) {
+            Category c = categoryRepository.findByName(request.getCategory())
+                .orElseGet(() -> { 
+                    Category nc = new Category(); 
+                    nc.setName(request.getCategory()); 
+                    return categoryRepository.save(nc); 
+                });
             existing.setCategory(c);
         }
-        existing.setExternalUrl(request.getExternalUrl());
-        existing.setPremium(request.isPremium());
+        if (request.getSource() != null) {
+            existing.setSource(request.getSource());
+        }
+        if (request.getExternalUrl() != null && !request.getExternalUrl().trim().isEmpty()) {
+            existing.setExternalUrl(request.getExternalUrl());
+        }
+        if (request.getTags() != null && !request.getTags().isEmpty()) {
+            Set<Tag> tags = new HashSet<>();
+            for (String t : request.getTags()) {
+                Tag tag = tagRepository.findByName(t)
+                    .orElseGet(() -> { 
+                        Tag nt = new Tag(); 
+                        nt.setName(t); 
+                        return tagRepository.save(nt); 
+                    });
+                tags.add(tag);
+            }
+            existing.setTags(tags);
+        }
         return questionRepository.save(existing);
     }
 
     @Override
-    public void delete(String slug) {
-        questionRepository.findBySlug(slug).ifPresent(questionRepository::delete);
+    public void delete(Long id) {
+        questionRepository.deleteById(id);
     }
 
     @Override
-    public Question findBySlug(String slug) {
-        return questionRepository.findBySlug(slug).orElse(null);
+    public Question findById(Long id) {
+        return questionRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Page<Question> list(String categorySlug, String difficulty, String source, String search, Pageable pageable) {
+    public Page<Question> list(String categoryName, String difficulty, String source, String search, Pageable pageable) {
         return questionRepository.findAll(pageable);
     }
 
@@ -99,39 +129,33 @@ public class QuestionsServiceImpl implements QuestionsService {
     }
 
     @Override
-    public List<Question> findByTagSlug(String tagSlug) {
+    public List<Question> findByTagName(String tagName) {
         return questionRepository.findAll().stream()
-                .filter(q -> q.getTags().stream().anyMatch(t -> t.getSlug().equals(tagSlug)))
+                .filter(q -> q.getTags().stream().anyMatch(t -> t.getName().equals(tagName)))
                 .toList();
     }
 
     @Override
-    public List<Question> findByCategorySlug(String categorySlug) {
+    public List<Question> findByCategoryName(String categoryName) {
         return questionRepository.findAll().stream()
-                .filter(q -> q.getCategory() != null && categorySlug.equals(q.getCategory().getSlug()))
+                .filter(q -> q.getCategory() != null && categoryName.equals(q.getCategory().getName()))
                 .toList();
     }
 
     @Override
     public Category addCategory(String name, String description) {
-        String slug = name.trim().toLowerCase().replaceAll("\\s+", "-");
-        Category c = categoryRepository.findBySlug(slug).orElseGet(() -> {
-            Category nc = new Category(); nc.setName(name); nc.setSlug(slug); nc.setDescription(description); return categoryRepository.save(nc);
+        Category c = categoryRepository.findByName(name).orElseGet(() -> {
+            Category nc = new Category(); 
+            nc.setName(name); 
+            nc.setDescription(description); 
+            return categoryRepository.save(nc);
         });
         return c;
     }
 
     @Override
-    public Question addOrUpdateSlug(String existingSlug, String newSlug) {
-        Question q = questionRepository.findBySlug(existingSlug).orElse(null);
-        if (q == null) return null;
-        q.setSlug(newSlug);
-        return questionRepository.save(q);
-    }
-
-    @Override
-    public Question updateExternalUrl(String slug, String externalUrl) {
-        Question q = questionRepository.findBySlug(slug).orElse(null);
+    public Question updateExternalUrl(Long id, String externalUrl) {
+        Question q = questionRepository.findById(id).orElse(null);
         if (q == null) return null;
         q.setExternalUrl(externalUrl);
         return questionRepository.save(q);
