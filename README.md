@@ -1,121 +1,592 @@
 # TickSkills
 
-TickSkills is a Spring Boot application designed to manage users and their skills. It provides a set of REST APIs to perform operations such as adding users, retrieving user information, and more.
+TickSkills is a production-ready Spring Boot application for managing questions and users with a modern web interface. It provides comprehensive REST APIs, an intuitive dashboard, and a complete test suite with 100% passing tests.
 
 ## Features
 
-- **User Management:** Add single or multiple users to the system.
-- **RESTful API:** A well-defined set of endpoints to interact with the application.
-- **Validation:** Input validation to ensure data integrity.
-- **Centralized Exception Handling:** Graceful error handling for a better user experience.
+### Question Management
+- Create, browse, update, and delete questions
+- Search questions by category, difficulty, or ID
+- Manage categories with descriptions
+- Random question selection
+- External URL support for questions
+- Tag-based organization
+- Pagination support
+
+### User Management
+- Create, browse, update, and delete users
+- User type management (Admin/User)
+- Active/Deleted user status tracking (soft delete)
+- User profile with photos
+- Bulk user operations
+- Email validation
+
+### Dashboard
+- Live statistics (Total Questions, Users, Categories, Active Users)
+- Quick navigation to management sections
+- Responsive design for all devices
+- Real-time data updates
+
+### Modern UI
+- Purple gradient theme
+- Card-based layout
+- Collapsible response sections
+- Search-first update workflow with preview modals
+- Status indicators for users (Active/Deleted)
+- Mobile-responsive design
+
+### Testing & Quality Assurance
+- **61 comprehensive tests** with 100% pass rate
+- Unit tests for service layer (37 tests)
+- Integration tests for REST endpoints (24 tests)
+- MySQL test database for production parity
+- Automated testing with JUnit 5 and Mockito
 
 ## Technologies Used
 
-- **Java 17:** The core programming language for the application.
-- **Spring Boot 3:** The framework used to build the application.
-- **Spring Web:** For building RESTful APIs.
-- **Spring Data JPA:** For data persistence and interaction with the database.
-- **MySQL:** The relational database used to store data.
-- **Lombok:** To reduce boilerplate code.
-- **Gradle:** The build automation tool for the project.
+### Backend
+- **Java 21:** Latest LTS version with modern features
+- **Spring Boot 3.4.9:** Latest Spring framework
+- **Spring Web:** RESTful API development
+- **Spring Data JPA:** ORM and database persistence
+- **Hibernate:** JPA implementation
+- **MySQL 8.0:** Production & test databases
+- **Lombok:** Code generation and boilerplate reduction
+
+### Testing
+- **JUnit 5:** Test framework
+- **Mockito:** Mocking framework for unit tests
+- **Spring Boot Test:** Integration testing
+- **MockMvc:** REST endpoint testing
+
+### Build & Development
+- **Gradle 8.14.3:** Build automation
+- **Spring DevTools:** Hot reload for development
+
+### Frontend
+- **Vanilla JavaScript:** No framework dependencies
+- **HTML5/CSS3:** Modern responsive UI
+- **Fetch API:** RESTful client communication
 
 ## Setup and Installation
 
-To get the project up and running on your local machine, follow these steps:
-
 ### Prerequisites
 
-- **Java 17** or higher
-- **Gradle**
-- **MySQL**
+- **Java 21** (LTS) - [Download from Oracle](https://www.oracle.com/java/technologies/downloads/#java21)
+- **Gradle 8.x** (included via wrapper)
+- **MySQL 8.0+**
 
 ### Installation
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
-   ```
-2. **Navigate to the project directory:**
-   ```bash
+   git clone https://github.com/basukinath/tickSkills.git
    cd tickSkillsGradle
    ```
-3. **Configure the database:**
-   Open `src/main/resources/application.properties` and update the database configuration with your MySQL credentials:
+
+2. **Verify Java 21 installation:**
+   ```bash
+   java -version
+   # Should show: java version "21.0.x"
+   ```
+
+3. **Configure the production database:**
+   
+   Create a MySQL database:
+   ```sql
+   CREATE DATABASE tickskills;
+   ```
+   
+   Update `src/main/resources/application.properties`:
    ```properties
    spring.datasource.url=jdbc:mysql://localhost:3306/tickskills
    spring.datasource.username=root
-   spring.datasource.password=12345
+   spring.datasource.password=yourpassword
    spring.jpa.hibernate.ddl-auto=update
    spring.jpa.show-sql=true
    ```
-4. **Run the application:**
+
+4. **Configure the test database (optional but recommended):**
+   
+   Create a test database:
+   ```sql
+   CREATE DATABASE tickskills_test;
+   ```
+   
+   The test configuration is in `src/test/resources/application.properties`
+   
+   See [MYSQL_TESTING_SETUP.md](MYSQL_TESTING_SETUP.md) for detailed test setup.
+
+5. **Build the application:**
+   ```bash
+   ./gradlew build
+   # This runs all 61 tests and builds the JAR
+   ```
+
+6. **Run the application:**
    ```bash
    ./gradlew bootRun
    ```
-The application will start on `http://localhost:8080`.
+   
+   Or run the JAR directly:
+   ```bash
+   java -jar build/libs/tickSkills-0.0.1-SNAPSHOT.jar
+   ```
+
+7. **Access the application:**
+   - Dashboard: `http://localhost:8080/dashboard.html`
+   - Question Management: `http://localhost:8080/index.html`
+   - User Management: `http://localhost:8080/user-management.html`
+
+## Testing
+
+### Run All Tests
+
+```bash
+# Run all 61 tests
+./gradlew test
+
+# Run with detailed output
+./gradlew test --info
+
+# Build and test together
+./gradlew clean build
+```
+
+### Test Coverage
+
+**Total: 61 tests (100% passing ✅)**
+
+#### Unit Tests (37 tests)
+- **UsersService** (18 tests)
+  - CRUD operations
+  - Duplicate username validation
+  - Bulk user operations
+  - Soft delete functionality
+  - Exception handling
+
+- **QuestionsService** (19 tests)
+  - Question CRUD operations
+  - Category and tag management
+  - Search and filtering
+  - Random question selection
+  - Pagination
+
+#### Integration Tests (24 tests)
+- **UserController** (12 tests)
+  - REST endpoint testing
+  - Path variable and request body validation
+  - Error response testing
+  - HTTP status code verification
+
+- **QuestionsController** (12 tests)
+  - REST endpoint testing
+  - Database integration
+  - Transaction rollback
+  - Response format validation
+
+### Test Documentation
+
+- [TEST_SUMMARY.md](TEST_SUMMARY.md) - Comprehensive test documentation
+- [TESTING_README.md](TESTING_README.md) - Testing guide and best practices
+- [MYSQL_TESTING_SETUP.md](MYSQL_TESTING_SETUP.md) - Test database configuration
+
+
 
 ## API Endpoints
 
-The following are the available API endpoints:
+### User Endpoints
 
-| Method | Endpoint         | Description              | Request Body                               | Response                                     |
-|--------|------------------|--------------------------|--------------------------------------------|----------------------------------------------|
-| `POST` | `/addUser`       | Adds a single user.      | `UserDTO` object                           | A success message with the username.         |
-| `POST` | `/addBulkUsers`  | Adds multiple users.     | A list of `UserDTO` objects                | A list of usernames that were added.         |
-| `GET`  | `/getAllUsers`   | Retrieves all usernames. | -                                          | A list of all usernames in the database.     |
+Base path: `/api/users`
 
-### Questions endpoints
+| Method   | Endpoint                      | Description                    | Request Body      | Response            |
+|----------|-------------------------------|--------------------------------|-------------------|---------------------|
+| `POST`   | `/addUser`                    | Add a single user              | `UserDTO`         | Success message     |
+| `POST`   | `/addBulkUsers`               | Add multiple users             | `List<UserDTO>`   | List of usernames   |
+| `GET`    | `/getUser/{username}`         | Get user by username           | -                 | `Users` object      |
+| `GET`    | `/getAllUsers`                | Get all usernames              | -                 | `List<String>`      |
+| `GET`    | `/getAllActiveUsers`          | Get active usernames only      | -                 | `List<String>`      |
+| `GET`    | `/getAllUsersDetails`         | Get all user details           | -                 | `List<Users>`       |
+| `PUT`    | `/updateUser/{username}`      | Update user                    | `UserDTO`         | Success message     |
+| `DELETE` | `/deleteUser/{username}`      | Delete user (soft delete)      | -                 | Success message     |
 
-The application exposes a set of endpoints to manage the question bank. All question endpoints are under the `/api/questions` base path.
+### Question Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/questions` | List questions (supports `categorySlug`, `difficulty`, `source`, `search`, `page`, `size`) |
-| `GET` | `/api/questions/randomCount/{count}` | Get random questions (default 10 when not provided) |
-| `GET` | `/api/questions/getSlug/{slug}` | Get question details by slug |
-| `POST` | `/api/questions/createQuestion` | Create a new question (body: `QuestionRequestDTO`) |
-| `PUT` | `/api/questions/updateSlug/{slug}` | Update question by slug (body: `QuestionRequestDTO`) |
-| `DELETE` | `/api/questions/deleteSlug/{slug}` | Delete question by slug |
-| `GET` | `/api/questions/getByTagSlug/{slug}` | Get questions by tag slug |
-| `GET` | `/api/questions/getByCategorySlug/{slug}` | Get questions by category slug |
-| `GET` | `/api/questions/listCategories` | List all categories |
+Base path: `/api/questions`
 
+| Method   | Endpoint                      | Description                    | Request Body              | Response                |
+|----------|-------------------------------|--------------------------------|---------------------------|-------------------------|
+| `GET`    | `/`                           | List questions (paginated)     | Query params              | `Page<Question>`        |
+| `GET`    | `/random10`                   | Get 10 random questions        | -                         | `List<Question>`        |
+| `GET`    | `/findById/{id}`              | Get question by ID             | -                         | `Question`              |
+| `GET`    | `/byCategory/{name}`          | Get questions by category      | -                         | `List<Question>`        |
+| `GET`    | `/byDifficulty/{difficulty}`  | Get questions by difficulty    | -                         | `List<Question>`        |
+| `GET`    | `/byTag/{name}`               | Get questions by tag           | -                         | `List<Question>`        |
+| `GET`    | `/listCategories`             | List all categories            | -                         | `List<Category>`        |
+| `GET`    | `/getTotalQuestions`          | Get total question count       | -                         | `Long`                  |
+| `POST`   | `/create`                     | Create a question              | `QuestionRequestDTO`      | `Question`              |
+| `POST`   | `/addCategory`                | Add a category                 | `CategoryRequestDTO`      | `Category`              |
+| `PUT`    | `/update/{id}`                | Update a question              | `QuestionRequestDTO`      | `Question`              |
+| `POST`   | `/updateExternalUrl/{id}`     | Update external URL            | `ExternalUrlDTO`          | `Question`              |
+| `DELETE` | `/delete/{id}`                | Delete a question              | -                         | `204 No Content`        |
 
-### Example `UserDTO`
+### Query Parameters for List Questions
+
+- `categoryName`: Filter by category name
+- `difficulty`: Filter by difficulty (EASY, MEDIUM, HARD)
+- `source`: Filter by source
+- `search`: Search in question text
+- `page`: Page number (default: 0)
+- `size`: Page size (default: 30)
+
+## Data Models
+
+### UserDTO
 
 ```json
 {
-    "name": "Basuki",
-    "username": "basuki",
-    "password": "password123",
-    "email": "basuki@example.com",
-    "phone": "1234567890",
-    "userType": "ADMIN"
+  "name": "John Doe",
+  "username": "johndoe",
+  "password": "securepassword",
+  "email": "john@example.com",
+  "phone": "+1234567890",
+  "userType": "USER",
+  "photoUrl": "https://example.com/photo.jpg"
 }
 ```
 
+**User Types:**
+- `USER` - Regular user
+- `ADMIN` - Administrator
+
+### QuestionRequestDTO
+
+```json
+{
+  "title": "What is polymorphism?",
+  "difficulty": "MEDIUM",
+  "category": "Java",
+  "source": "Interview",
+  "externalUrl": "https://example.com/question",
+  "tags": ["java", "oop", "polymorphism"]
+}
+```
+
+**Difficulty Levels:**
+- `EASY`
+- `MEDIUM`
+- `HARD`
+
 ## Database Schema
 
-The primary table in the database is the `Users` table, which has the following columns:
+### Users Table
 
-- `id` (Primary Key)
-- `name`
-- `username` (Unique)
-- `password`
-- `email`
-- `phone`
-- `userType`
-- `createdOn`
-- `createdBy`
+| Column      | Type         | Constraints           |
+|-------------|--------------|-----------------------|
+| id          | BIGINT       | Primary Key, Auto     |
+| name        | VARCHAR(255) |                       |
+| username    | VARCHAR(255) | Unique                |
+| password    | VARCHAR(255) |                       |
+| email       | VARCHAR(255) | Not Null              |
+| phone       | VARCHAR(20)  |                       |
+| userType    | VARCHAR(50)  | Not Null              |
+| photoUrl    | VARCHAR(500) |                       |
+| isDeleted   | BOOLEAN      | Default: false        |
+| createdOn   | DATETIME     |                       |
+| createdBy   | VARCHAR(255) |                       |
 
-## How to Contribute
+### Question Table
 
-Contributions are welcome! If you would like to contribute to the project, please follow these steps:
+| Column       | Type         | Constraints           |
+|--------------|--------------|-----------------------|
+| id           | BIGINT       | Primary Key, Auto     |
+| title        | TEXT         | Not Null              |
+| difficulty   | VARCHAR(50)  |                       |
+| source       | VARCHAR(255) |                       |
+| externalUrl  | VARCHAR(500) |                       |
+| category_id  | BIGINT       | Foreign Key           |
 
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/your-feature-name`).
-3. Make your changes.
-4. Commit your changes (`git commit -m 'Add some feature'`).
-5. Push to the branch (`git push origin feature/your-feature-name`).
-6. Open a pull request.
+### Category Table
+
+| Column      | Type         | Constraints           |
+|-------------|--------------|-----------------------|
+| id          | BIGINT       | Primary Key, Auto     |
+| name        | VARCHAR(255) | Unique                |
+| description | TEXT         |                       |
+
+### Tag Table
+
+| Column | Type         | Constraints           |
+|--------|--------------|-----------------------|
+| id     | BIGINT       | Primary Key, Auto     |
+| name   | VARCHAR(255) | Unique                |
+
+## UI Pages
+
+### Dashboard (`dashboard.html`)
+- Entry point with live statistics
+- Quick access cards to Question and User Management
+- Shows: Total Questions, Total Users, Categories, Active Users
+
+### Question Management (`index.html`)
+- **Create Question:** Add new questions with category, difficulty, tags
+- **Browse & Search:** Search by category, difficulty, or ID
+- **Update Question:** Search-first workflow with preview
+- **Delete Question:** Remove questions with confirmation
+- **Categories:** Manage question categories
+
+### User Management (`user-management.html`)
+- **Create User:** Add new users with email and user type (required)
+- **Browse Users:** View all users with status indicators
+  - Green background: Active users
+  - Red background: Deleted users
+  - Click "View Details" for full information in a modal card
+- **Update User:** Search by username, preview details, then update
+  - Username field disabled after search
+  - Only modified fields are updated
+- **Delete User:** Soft delete with confirmation
+
+## UI Features
+
+### Navigation
+- Dashboard → Click management cards → Enter section
+- Each section → Click "← Back to Dashboard" → Return home
+- Horizontal tabs within each management section
+
+### Search & Update Workflow
+1. Enter username/question ID
+2. Click Search button
+3. Preview modal shows current data (green border)
+4. Click Close to reveal update form
+5. Edit desired fields (blank = keep current)
+6. Submit changes
+
+### Status Indicators
+- **Users:** Green (Active) / Red (Deleted)
+- **User Types:** Blue badge (USER) / Red badge (ADMIN)
+
+### Responsive Design
+- Desktop: 2-4 column layouts
+- Tablet: 2 column layouts
+- Mobile: Single column, stacked navigation
+
+### Alert Modals
+All success/error messages displayed in styled card modals instead of browser alerts
+
+## Development
+
+### Project Structure
+
+```
+tickSkillsGradle/
+├── src/
+│   ├── main/
+│   │   ├── java/com/basuki/project/tickSkills/
+│   │   │   ├── controller/
+│   │   │   │   ├── questions/QuestionsController.java
+│   │   │   │   └── users/UserController.java
+│   │   │   ├── service/
+│   │   │   │   ├── questions/
+│   │   │   │   │   ├── QuestionsService.java
+│   │   │   │   │   └── impl/QuestionsServiceImpl.java
+│   │   │   │   └── users/UsersService.java
+│   │   │   ├── repository/
+│   │   │   │   ├── questions/
+│   │   │   │   └── users/
+│   │   │   ├── entities/
+│   │   │   │   ├── questions/
+│   │   │   │   └── users/
+│   │   │   ├── dtos/
+│   │   │   ├── configs/
+│   │   │   └── exceptions/
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       └── static/
+│   │           ├── dashboard.html
+│   │           ├── index.html
+│   │           ├── user-management.html
+│   │           ├── app.js
+│   │           └── app-users.js
+│   └── test/
+│       ├── java/com/basuki/project/tickSkills/
+│       │   ├── controller/
+│       │   │   ├── questions/QuestionsControllerIntegrationTest.java
+│       │   │   └── users/UserControllerIntegrationTest.java
+│       │   └── service/
+│       │       ├── questions/QuestionsServiceTest.java
+│       │       └── users/UsersServiceTest.java
+│       └── resources/
+│           └── application.properties (test config)
+├── etc/
+│   └── create-test-database.sql
+├── build.gradle
+├── README.md
+├── TEST_SUMMARY.md
+├── TESTING_README.md
+└── MYSQL_TESTING_SETUP.md
+```
+
+### Key Configuration Files
+
+**build.gradle**
+```gradle
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+dependencies {
+    // Spring Boot 3.4.9
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+}
+```
+
+### Building for Production
+
+```bash
+# Clean build without tests (faster)
+./gradlew clean build -x test
+
+# Run the production JAR
+java -jar build/libs/tickSkills-0.0.1-SNAPSHOT.jar
+
+# Run with specific profile
+java -jar build/libs/tickSkills-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+```
+
+### Development Workflow
+
+1. **Start development server with hot reload:**
+   ```bash
+   ./gradlew bootRun
+   ```
+   
+2. **Run tests in watch mode:**
+   ```bash
+   ./gradlew test --continuous
+   ```
+
+3. **Check code quality:**
+   ```bash
+   ./gradlew check
+   ```
+
+### Testing Endpoints
+
+Use the included Postman collection: `tickskills.postman_collection.json`
+
+Import into Postman and test all available endpoints.
+
+## Troubleshooting
+
+### Common Issues
+
+**Java Version Mismatch:**
+- Ensure Java 21 is installed: `java -version`
+- Set JAVA_HOME to Java 21 directory
+- Gradle will automatically use Java 21 via toolchain
+
+**Database Connection Error:**
+- Verify MySQL is running: `mysql --version`
+- Check credentials in `application.properties`
+- Ensure database `tickskills` exists
+- Test connection: `mysql -u root -p tickskills`
+
+**Port Already in Use:**
+- Stop other applications on port 8080
+- Or change port in `application.properties`: `server.port=8081`
+- Kill process using port: `netstat -ano | findstr :8080` (Windows)
+
+**JavaScript Errors:**
+- Hard refresh browser (Ctrl+F5 / Cmd+Shift+R)
+- Clear browser cache
+- Check browser console (F12) for errors
+- Verify API endpoints are accessible
+
+**Test Failures:**
+- Ensure test database exists: `CREATE DATABASE tickskills_test;`
+- Verify MySQL test credentials in `src/test/resources/application.properties`
+- Check MySQL is running and accessible
+- Run tests with verbose output: `./gradlew test --info`
+
+**User Creation Error:**
+- Email and User Type are required fields
+- Email must be valid format
+- Username must be unique
+- Phone number should be valid
+
+**Gradle Build Issues:**
+- Clean Gradle cache: `./gradlew clean`
+- Delete `.gradle` folder and rebuild
+- Ensure Gradle wrapper is executable: `chmod +x gradlew` (Linux/Mac)
+
+### Performance Tips
+
+- Enable production mode for better performance
+- Use connection pooling (HikariCP is auto-configured)
+- Configure appropriate JVM heap size: `-Xmx2g -Xms512m`
+- Monitor application with Spring Boot Actuator (if enabled)
+
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Make your changes and add tests
+4. Ensure all tests pass: `./gradlew test`
+5. Commit changes: `git commit -m 'Add feature: description'`
+6. Push to branch: `git push origin feature/your-feature`
+7. Open a pull request
+
+### Development Guidelines
+
+- Follow Java coding conventions
+- Write unit tests for new features
+- Add integration tests for new endpoints
+- Update documentation as needed
+- Keep test coverage high
+
+## Technology Stack Summary
+
+| Category | Technology | Version |
+|----------|-----------|---------|
+| Language | Java | 21 LTS |
+| Framework | Spring Boot | 3.4.9 |
+| Build Tool | Gradle | 8.14.3 |
+| Database | MySQL | 8.0+ |
+| Testing | JUnit 5 | 5.x |
+| Mocking | Mockito | Latest |
+| ORM | Hibernate | 6.x |
+| Frontend | Vanilla JS | ES6+ |
+
+## License
+
+This project is open source and available under the MIT License.
+
+## Contact
+
+- **GitHub:** [@basukinath](https://github.com/basukinath)
+- **Repository:** [tickSkills](https://github.com/basukinath/tickSkills)
+
+## Acknowledgments
+
+- Spring Boot team for the excellent framework
+- MySQL community for the reliable database
+- All contributors and users of TickSkills
+
+---
+
+**Version:** 3.0  
+**Last Updated:** October 2025  
+**Status:** Production Ready ✅  
+**Test Coverage:** 61/61 tests passing (100%) ✅
 
