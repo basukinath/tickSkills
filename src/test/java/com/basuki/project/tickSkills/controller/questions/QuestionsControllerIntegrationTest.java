@@ -250,4 +250,95 @@ class QuestionsControllerIntegrationTest {
         mockMvc.perform(get("/api/questions/byTag/{name}", "array"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("GET /api/questions/listTags - Should return all tags")
+    void testListTags() throws Exception {
+        // Save question with tags to ensure tags exist
+        questionRepository.save(testQuestion);
+
+        mockMvc.perform(get("/api/questions/listTags"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @DisplayName("POST /api/questions/bulkImport - Should import multiple questions successfully")
+    void testBulkImport_Success() throws Exception {
+        String bulkImportJson = """
+                [
+                    {
+                        "title": "Test Question 1",
+                        "slug": "test-question-1",
+                        "difficulty": "Easy",
+                        "category": "Arrays",
+                        "source": "LEETCODE",
+                        "tags": ["Array", "Hash Table"]
+                    },
+                    {
+                        "title": "Test Question 2",
+                        "slug": "test-question-2",
+                        "difficulty": "Medium",
+                        "category": "Dynamic Programming",
+                        "source": "LEETCODE",
+                        "tags": ["Dynamic Programming"]
+                    }
+                ]
+                """;
+
+        mockMvc.perform(post("/api/questions/bulkImport")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(bulkImportJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalQuestions").value(2))
+                .andExpect(jsonPath("$.durationMs").exists());
+    }
+
+    @Test
+    @DisplayName("POST /api/questions/bulkImport - Should skip duplicates")
+    void testBulkImport_WithDuplicates() throws Exception {
+        // First, save a question
+        questionRepository.save(testQuestion);
+
+        String bulkImportJson = """
+                [
+                    {
+                        "title": "Two Sum",
+                        "slug": "two-sum-duplicate",
+                        "difficulty": "Easy",
+                        "category": "Arrays",
+                        "source": "LEETCODE",
+                        "tags": ["Array"]
+                    },
+                    {
+                        "title": "Unique Question For Test",
+                        "slug": "unique-question-test",
+                        "difficulty": "Medium",
+                        "category": "Arrays",
+                        "source": "LEETCODE",
+                        "tags": ["Array"]
+                    }
+                ]
+                """;
+
+        mockMvc.perform(post("/api/questions/bulkImport")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(bulkImportJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalQuestions").value(2))
+                .andExpect(jsonPath("$.skippedDuplicates").value(greaterThanOrEqualTo(1)));
+    }
+
+    @Test
+    @DisplayName("GET /api/questions - Should filter by tagName")
+    void testListQuestions_WithTagFilter() throws Exception {
+        questionRepository.save(testQuestion);
+
+        mockMvc.perform(get("/api/questions")
+                        .param("tagName", "array")
+                        .param("page", "0")
+                        .param("size", "30"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
+    }
 }

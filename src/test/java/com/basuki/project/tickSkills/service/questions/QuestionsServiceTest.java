@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.*;
 
@@ -233,7 +234,7 @@ class QuestionsServiceTest {
     void testFindByCategoryName() {
         // Given
         List<Question> questions = Arrays.asList(testQuestion);
-        when(questionRepository.findAll()).thenReturn(questions);
+        when(questionRepository.findByCategoryName("Arrays")).thenReturn(questions);
 
         // When
         List<Question> result = questionsService.findByCategoryName("Arrays");
@@ -241,7 +242,7 @@ class QuestionsServiceTest {
         // Then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getTitle()).isEqualTo("Two Sum");
-        verify(questionRepository).findAll();
+        verify(questionRepository).findByCategoryName("Arrays");
     }
 
     @Test
@@ -249,7 +250,7 @@ class QuestionsServiceTest {
     void testFindByDifficulty() {
         // Given
         List<Question> questions = Arrays.asList(testQuestion);
-        when(questionRepository.findAll()).thenReturn(questions);
+        when(questionRepository.findAll(any(Specification.class))).thenReturn(questions);
 
         // When
         List<Question> result = questionsService.findByDifficulty("EASY");
@@ -257,7 +258,7 @@ class QuestionsServiceTest {
         // Then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getDifficulty()).isEqualTo(Difficulty.EASY);
-        verify(questionRepository).findAll();
+        verify(questionRepository).findAll(any(Specification.class));
     }
 
     @Test
@@ -265,14 +266,14 @@ class QuestionsServiceTest {
     void testFindByTagName() {
         // Given
         List<Question> questions = Arrays.asList(testQuestion);
-        when(questionRepository.findAll()).thenReturn(questions);
+        when(questionRepository.findByTagName("hash-table")).thenReturn(questions);
 
         // When
         List<Question> result = questionsService.findByTagName("hash-table");
 
         // Then
         assertThat(result).hasSize(1);
-        verify(questionRepository).findAll();
+        verify(questionRepository).findByTagName("hash-table");
     }
 
     @Test
@@ -280,14 +281,14 @@ class QuestionsServiceTest {
     void testRandom() {
         // Given
         List<Question> questions = Arrays.asList(testQuestion);
-        when(questionRepository.findAll()).thenReturn(questions);
+        when(questionRepository.findRandomQuestions(10)).thenReturn(questions);
 
         // When
         List<Question> result = questionsService.random(10);
 
         // Then
         assertThat(result).hasSize(1);
-        verify(questionRepository).findAll();
+        verify(questionRepository).findRandomQuestions(10);
     }
 
     @Test
@@ -295,14 +296,14 @@ class QuestionsServiceTest {
     void testRandom10() {
         // Given
         List<Question> questions = Arrays.asList(testQuestion);
-        when(questionRepository.findAll()).thenReturn(questions);
+        when(questionRepository.findRandomQuestions(10)).thenReturn(questions);
 
         // When
         List<Question> result = questionsService.random10();
 
         // Then
         assertThat(result).hasSize(1);
-        verify(questionRepository).findAll();
+        verify(questionRepository).findRandomQuestions(10);
     }
 
     @Test
@@ -327,15 +328,15 @@ class QuestionsServiceTest {
         List<Question> questions = Arrays.asList(testQuestion);
         Page<Question> page = new PageImpl<>(questions, pageable, 1);
         
-        when(questionRepository.findAll(any(Pageable.class))).thenReturn(page);
+        when(questionRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
 
         // When
-        Page<Question> result = questionsService.list(null, null, null, null, pageable);
+        Page<Question> result = questionsService.list(null, null, null, null, null, pageable);
 
         // Then
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getTotalElements()).isEqualTo(1);
-        verify(questionRepository).findAll(any(Pageable.class));
+        verify(questionRepository).findAll(any(Specification.class), any(Pageable.class));
     }
 
     @Test

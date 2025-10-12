@@ -25,9 +25,12 @@
       border-radius: 12px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     
-    h1 {
+    .header-content h1 {
       color: #2d3748;
       font-size: 32px;
       margin-bottom: 8px;
@@ -36,6 +39,25 @@
     .subtitle {
       color: #718096;
       font-size: 14px;
+    }
+    
+    .back-button {
+      background: #718096;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .back-button:hover {
+      background: #4a5568;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     
     nav {
@@ -335,6 +357,69 @@
       box-shadow: 0 8px 16px rgba(0,0,0,0.2);
     }
     
+    /* Tag badges */
+    .tag-badge {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #5568d3;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .tag-badge:hover {
+      background: #667eea;
+      color: white;
+      transform: scale(1.05);
+    }
+    
+    .tag-badge.selected {
+      background: #667eea;
+      color: white;
+    }
+    
+    /* Import result styles */
+    .import-stat {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 8px;
+      margin: 4px;
+      font-weight: 600;
+    }
+    
+    .stat-success { background: #c6f6d5; color: #22543d; }
+    .stat-skip { background: #fed7d7; color: #742a2a; }
+    .stat-fail { background: #feebc8; color: #7c2d12; }
+    .stat-total { background: #bee3f8; color: #1e4e8c; }
+    
+    .question-tags {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    
+    /* Code styling */
+    code {
+      background: #edf2f7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #e53e3e;
+      font-weight: 500;
+    }
+    
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+    
     @media (max-width: 768px) {
       .form-grid {
         grid-template-columns: 1fr;
@@ -346,6 +431,12 @@
       
       .nav-links a {
         text-align: center;
+      }
+      
+      header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
       }
       
       /* Make search grid single column on mobile */
@@ -365,8 +456,13 @@
 <body>
   <div class="container">
     <header>
-      <h1>🎯 TickSkills</h1>
-      <p class="subtitle">Question Management System</p>
+      <div class="header-content">
+        <h1>🎯 TickSkills</h1>
+        <p class="subtitle">Question Management System</p>
+      </div>
+      <a href="dashboard.html" class="back-button">
+        ← Back to Dashboard
+      </a>
     </header>
     
     <nav>
@@ -374,9 +470,11 @@
         <a href="#home" class="nav-link active" data-page="home">🏠 Home</a>
         <a href="#create" class="nav-link" data-page="create">➕ Create Question</a>
         <a href="#browse" class="nav-link" data-page="browse">📚 Browse & Search</a>
+        <a href="#bulkimport" class="nav-link" data-page="bulkimport">📤 Bulk Import</a>
         <a href="#update" class="nav-link" data-page="update">✏️ Update Question</a>
         <a href="#delete" class="nav-link" data-page="delete">🗑️ Delete Question</a>
         <a href="#categories" class="nav-link" data-page="categories">📁 Categories</a>
+        <a href="#tags" class="nav-link" data-page="tags">🏷️ Tags</a>
       </div>
     </nav>
     
@@ -494,40 +592,68 @@
       <div id="browse" class="page">
         <h2 style="margin-bottom: 24px; color: #2d3748;">Browse & Search Questions</h2>
         
-        <!-- Search Section -->
+        <!-- Advanced Search Section -->
         <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
-          <h3 style="margin-bottom: 16px; color: #2d3748;">🔍 Search Questions</h3>
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;">
+          <h3 style="margin-bottom: 16px; color: #2d3748;">🔍 Advanced Search</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 16px;">
             <div>
-              <label>Search by Category</label>
+              <label>Filter by Category</label>
               <select id="cat_select">
-                <option value="">-- SELECT --</option>
+                <option value="">-- ALL CATEGORIES --</option>
               </select>
-              <button id="btn_find_cat">Search</button>
             </div>
             
             <div>
-              <label>Search by Difficulty</label>
+              <label>Filter by Difficulty</label>
               <select id="diff_select">
-                <option value="">-- SELECT --</option>
+                <option value="">-- ALL DIFFICULTIES --</option>
                 <option value="EASY">EASY</option>
                 <option value="MEDIUM">MEDIUM</option>
                 <option value="HARD">HARD</option>
               </select>
-              <button id="btn_find_diff">Search</button>
             </div>
             
             <div>
-              <label>Search by Question ID</label>
-              <input id="id_search" type="number" placeholder="Enter question ID" />
-              <button id="btn_find_id">Search</button>
+              <label>Filter by Tag 🏷️</label>
+              <select id="tag_select">
+                <option value="">-- ALL TAGS --</option>
+              </select>
+            </div>
+            
+            <div>
+              <label>Filter by Source</label>
+              <select id="source_select">
+                <option value="">-- ALL SOURCES --</option>
+                <option value="LEETCODE">LEETCODE</option>
+                <option value="HACKERRANK">HACKERRANK</option>
+                <option value="GFG">GFG</option>
+              </select>
+            </div>
+            
+            <div style="grid-column: 1 / -1;">
+              <label>Search by Title</label>
+              <input id="title_search" type="text" placeholder="Enter keywords to search in title..." />
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 8px;">
+            <button id="btn_filter_questions">🔍 Apply Filters</button>
+            <button id="btn_clear_filters" class="secondary">🔄 Clear Filters</button>
+            <button id="btn_find_id" class="secondary" style="margin-left: auto;">🔢 Search by ID</button>
+          </div>
+          
+          <div style="margin-top: 12px;">
+            <label>Quick Search by ID</label>
+            <div style="display: flex; gap: 8px;">
+              <input id="id_search" type="number" placeholder="Enter question ID" style="flex: 1; margin-bottom: 0;" />
+              <button id="btn_search_by_id" style="white-space: nowrap;">Search</button>
             </div>
           </div>
         </div>
         
-        <!-- Common Search Results Section -->
+        <!-- Filtered Results Section -->
         <div class="result-box" style="margin-bottom: 24px;">
-          <h3>Search Results</h3>
+          <h3>Filtered Results <span id="results_count" style="color: #718096; font-weight: normal;"></span></h3>
           <div id="search_results"></div>
         </div>
         
@@ -737,6 +863,177 @@
           </div>
           <div class="collapsible-content">
             <pre id="categories_raw">(Response will appear here)</pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bulk Import Page -->
+      <div id="bulkimport" class="page">
+        <h2 style="margin-bottom: 24px; color: #2d3748;">📤 Bulk Import Questions</h2>
+        
+        <div class="alert alert-info" style="margin-bottom: 24px;">
+          <strong>ℹ️ Import Guidelines:</strong>
+          <ul style="margin-top: 8px; margin-left: 20px;">
+            <li>Upload a JSON file with an array of questions</li>
+            <li>Each question must have: title, slug, difficulty, category, source, tags</li>
+            <li>Duplicate titles will be skipped automatically</li>
+            <li>Categories and tags will be auto-created if they don't exist</li>
+            <li>Maximum recommended: 5,000 questions per import</li>
+          </ul>
+        </div>
+        
+        <!-- JSON Format Sample -->
+        <div class="collapsible-section" style="margin-bottom: 24px;">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <span>📋 JSON Format Example</span>
+            <span class="arrow">▼</span>
+          </div>
+          <div class="collapsible-content" style="display: none;">
+            <div style="background: #2d3748; color: #e2e8f0; padding: 16px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 13px; overflow-x: auto;">
+<pre style="margin: 0; color: #e2e8f0;">[
+  {
+    <span style="color: #68d391;">"id"</span>: <span style="color: #90cdf4;">1</span>,
+    <span style="color: #68d391;">"title"</span>: <span style="color: #fbd38d;">"Two Sum"</span>,
+    <span style="color: #68d391;">"slug"</span>: <span style="color: #fbd38d;">"two-sum"</span>,
+    <span style="color: #68d391;">"difficulty"</span>: <span style="color: #fbd38d;">"Easy"</span>,
+    <span style="color: #68d391;">"category"</span>: <span style="color: #fbd38d;">"Arrays & Hashing"</span>,
+    <span style="color: #68d391;">"source"</span>: <span style="color: #fbd38d;">"LEETCODE"</span>,
+    <span style="color: #68d391;">"external_url"</span>: <span style="color: #fbd38d;">"https://leetcode.com/problems/two-sum/"</span>,
+    <span style="color: #68d391;">"is_active"</span>: <span style="color: #f687b3;">true</span>,
+    <span style="color: #68d391;">"is_premium"</span>: <span style="color: #f687b3;">false</span>,
+    <span style="color: #68d391;">"acceptance_rate"</span>: <span style="color: #90cdf4;">52.5</span>,
+    <span style="color: #68d391;">"companies"</span>: [<span style="color: #fbd38d;">"Amazon"</span>, <span style="color: #fbd38d;">"Microsoft"</span>, <span style="color: #fbd38d;">"Google"</span>],
+    <span style="color: #68d391;">"tags"</span>: [<span style="color: #fbd38d;">"Array"</span>, <span style="color: #fbd38d;">"Hash Table"</span>]
+  },
+  {
+    <span style="color: #68d391;">"id"</span>: <span style="color: #90cdf4;">2</span>,
+    <span style="color: #68d391;">"title"</span>: <span style="color: #fbd38d;">"Add Two Numbers"</span>,
+    <span style="color: #68d391;">"slug"</span>: <span style="color: #fbd38d;">"add-two-numbers"</span>,
+    <span style="color: #68d391;">"difficulty"</span>: <span style="color: #fbd38d;">"Medium"</span>,
+    <span style="color: #68d391;">"category"</span>: <span style="color: #fbd38d;">"Linked List"</span>,
+    <span style="color: #68d391;">"source"</span>: <span style="color: #fbd38d;">"LEETCODE"</span>,
+    <span style="color: #68d391;">"external_url"</span>: <span style="color: #fbd38d;">"https://leetcode.com/problems/add-two-numbers/"</span>,
+    <span style="color: #68d391;">"is_active"</span>: <span style="color: #f687b3;">true</span>,
+    <span style="color: #68d391;">"is_premium"</span>: <span style="color: #f687b3;">false</span>,
+    <span style="color: #68d391;">"acceptance_rate"</span>: <span style="color: #90cdf4;">42.3</span>,
+    <span style="color: #68d391;">"companies"</span>: [<span style="color: #fbd38d;">"Amazon"</span>, <span style="color: #fbd38d;">"Apple"</span>],
+    <span style="color: #68d391;">"tags"</span>: [<span style="color: #fbd38d;">"Linked List"</span>, <span style="color: #fbd38d;">"Math"</span>, <span style="color: #fbd38d;">"Recursion"</span>]
+  }
+]</pre>
+            </div>
+            <div style="margin-top: 12px; padding: 12px; background: #edf2f7; border-radius: 6px; font-size: 13px;">
+              <strong>📝 Field Descriptions:</strong>
+              <ul style="margin-top: 8px; margin-left: 20px; line-height: 1.8;">
+                <li><code>id</code> (optional): External reference ID</li>
+                <li><code>title</code> (required): Question title (used for duplicate detection)</li>
+                <li><code>slug</code> (required): URL-friendly identifier</li>
+                <li><code>difficulty</code> (required): Must be "Easy", "Medium", or "Hard"</li>
+                <li><code>category</code> (required): Category name (auto-created if needed)</li>
+                <li><code>source</code> (required): Must be "LEETCODE", "HACKERRANK", or "GFG"</li>
+                <li><code>external_url</code> (optional): Link to original question</li>
+                <li><code>is_active</code> (optional): Boolean, defaults to true</li>
+                <li><code>is_premium</code> (optional): Boolean, indicates premium content</li>
+                <li><code>acceptance_rate</code> (optional): Number (percentage)</li>
+                <li><code>companies</code> (optional): Array of company names</li>
+                <li><code>tags</code> (required): Array of tag names (auto-created if needed)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div style="background: #f7fafc; padding: 24px; border-radius: 8px; margin-bottom: 24px;">
+          <h3 style="margin-bottom: 16px;">📁 Upload JSON File</h3>
+          
+          <div class="form-group">
+            <label>Select JSON File</label>
+            <input type="file" id="bulk_file" accept=".json" style="padding: 8px; border: 2px dashed #cbd5e0;" />
+          </div>
+          
+          <div style="display: flex; gap: 8px; margin-top: 16px;">
+            <button id="btn_bulk_import">📤 Import Questions</button>
+            <button id="btn_validate_json" class="secondary">✓ Validate JSON</button>
+          </div>
+          
+          <div id="bulk_preview" style="margin-top: 16px; display: none;">
+            <h4 style="margin-bottom: 8px;">Preview (First 3 questions):</h4>
+            <pre id="bulk_preview_content" style="background: white; padding: 12px; border-radius: 4px; font-size: 12px; max-height: 200px; overflow-y: auto;"></pre>
+          </div>
+        </div>
+        
+        <div class="result-box">
+          <h3>Import Results</h3>
+          <div id="bulk_results">
+            <div class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <p>No import executed yet</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Collapsible Raw Response -->
+        <div class="collapsible-section">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <span>📄 Raw Response</span>
+            <span class="arrow">▼</span>
+          </div>
+          <div class="collapsible-content">
+            <pre id="bulkimport_raw">(Response will appear here)</pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tags Page -->
+      <div id="tags" class="page">
+        <h2 style="margin-bottom: 24px; color: #2d3748;">🏷️ Tag Management</h2>
+        
+        <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3>All Tags</h3>
+            <button id="btn_refresh_tags" class="secondary">↻ Refresh</button>
+          </div>
+          
+          <div id="tags_stats" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;">
+            <div style="background: white; padding: 16px; border-radius: 8px; text-align: center;">
+              <div style="font-size: 24px; font-weight: bold; color: #667eea;" id="total_tags">-</div>
+              <div style="font-size: 12px; color: #718096;">Total Tags</div>
+            </div>
+            <div style="background: white; padding: 16px; border-radius: 8px; text-align: center;">
+              <div style="font-size: 24px; font-weight: bold; color: #48bb78;" id="most_used_tag">-</div>
+              <div style="font-size: 12px; color: #718096;">Most Used</div>
+            </div>
+            <div style="background: white; padding: 16px; border-radius: 8px; text-align: center;">
+              <div style="font-size: 24px; font-weight: bold; color: #f56565;" id="least_used_tag">-</div>
+              <div style="font-size: 12px; color: #718096;">Least Used</div>
+            </div>
+            <div style="background: white; padding: 16px; border-radius: 8px; text-align: center;">
+              <div style="font-size: 24px; font-weight: bold; color: #ed8936;" id="avg_tags_per_q">-</div>
+              <div style="font-size: 12px; color: #718096;">Avg Tags/Question</div>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 16px;">
+            <label>Search Tags</label>
+            <input type="text" id="tag_search" placeholder="Type to search tags..." />
+          </div>
+          
+          <div id="tags_list" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 400px; overflow-y: auto; background: white; padding: 16px; border-radius: 8px;">
+            <div style="text-align: center; color: #718096; width: 100%;">Loading tags...</div>
+          </div>
+        </div>
+        
+        <div class="result-box">
+          <h3>Questions with Selected Tag</h3>
+          <div id="by_tag_list"></div>
+        </div>
+        
+        <!-- Collapsible Raw Response -->
+        <div class="collapsible-section">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <span>📄 Raw Response</span>
+            <span class="arrow">▼</span>
+          </div>
+          <div class="collapsible-content">
+            <pre id="tags_raw">(Response will appear here)</pre>
           </div>
         </div>
       </div>

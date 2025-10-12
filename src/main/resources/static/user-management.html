@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TickSkills - User Management</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    header {
+      background: white;
+      padding: 24px 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .header-content h1 {
+      color: #2d3748;
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    
+    .subtitle {
+      color: #718096;
+      font-size: 14px;
+    }
+    
+    .back-button {
+      background: #718096;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .back-button:hover {
+      background: #4a5568;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    nav {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      padding: 12px 20px;
+      background: #f7fafc;
+      color: #2d3748;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+    
+    .nav-links a:hover {
+      background: #edf2f7;
+      border-color: #667eea;
+    }
+    
+    .nav-links a.active {
+      background: #667eea;
+      color: white;
+    }
+    
+    .content {
+      background: white;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      min-height: 400px;
+    }
+    
+    .page {
+      display: none;
+    }
+    
+    .page.active {
+      display: block;
+    }
+    
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2d3748;
+      font-size: 14px;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    button {
+      background: #667eea;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button.secondary {
+      background: #718096;
+    }
+    
+    button.secondary:hover {
+      background: #4a5568;
+    }
+    
+    button.danger {
+      background: #f56565;
+    }
+    
+    button.danger:hover {
+      background: #e53e3e;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .full-width {
+      grid-column: 1 / -1;
+    }
+    
+    .result-box {
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .result-box h3 {
+      margin-bottom: 12px;
+      color: #2d3748;
+    }
+    
+    .user-item {
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      border-left: 4px solid #667eea;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    
+    .user-item.user-active {
+      background: #f0fff4;
+      border-left-color: #48bb78;
+    }
+    
+    .user-item.user-deleted {
+      background: #fff5f5;
+      border-left-color: #f56565;
+      opacity: 0.8;
+    }
+    
+    .user-item:hover {
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    
+    .user-info {
+      font-weight: 500;
+      color: #2d3748;
+    }
+    
+    .user-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    
+    .badge-admin {
+      background: #fed7d7;
+      color: #c53030;
+    }
+    
+    .badge-user {
+      background: #bee3f8;
+      color: #2c5282;
+    }
+    
+    .badge-active {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+    
+    /* User Details Card Modal */
+    .user-details-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .user-details-overlay.show {
+      display: flex;
+    }
+    
+    .user-details-card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      position: relative;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .user-details-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .user-details-header h3 {
+      color: #2d3748;
+      font-size: 24px;
+      margin: 0;
+    }
+    
+    .user-details-close {
+      background: #f7fafc;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      font-size: 20px;
+      color: #718096;
+      transition: all 0.2s;
+    }
+    
+    .user-details-close:hover {
+      background: #e2e8f0;
+      color: #2d3748;
+    }
+    
+    .user-details-body {
+      display: grid;
+      gap: 16px;
+    }
+    
+    .user-detail-row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 16px;
+      padding: 12px;
+      background: #f7fafc;
+      border-radius: 8px;
+    }
+    
+    .user-detail-label {
+      font-weight: 600;
+      color: #4a5568;
+      font-size: 14px;
+    }
+    
+    .user-detail-value {
+      color: #2d3748;
+      font-size: 14px;
+      word-break: break-word;
+    }
+    
+    /* Alert/Message Card */
+    .alert-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .alert-overlay.show {
+      display: flex;
+    }
+    
+    .alert-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .alert-card.success {
+      border-top: 4px solid #48bb78;
+    }
+    
+    .alert-card.error {
+      border-top: 4px solid #f56565;
+    }
+    
+    .alert-card.info {
+      border-top: 4px solid #4299e1;
+    }
+    
+    .alert-icon {
+      font-size: 48px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    
+    .alert-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #2d3748;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    
+    .alert-message {
+      color: #4a5568;
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    
+    .alert-button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      width: 100%;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .alert-button:hover {
+      background: #5568d3;
+    }
+    
+    .collapsible {
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 24px;
+    }
+    
+    .collapsible-header {
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    
+    .collapsible-header h3 {
+      color: #2d3748;
+    }
+    
+    .collapsible-icon {
+      font-size: 20px;
+      transition: transform 0.3s;
+    }
+    
+    .collapsible-icon.open {
+      transform: rotate(180deg);
+    }
+    
+    .collapsible-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    
+    .collapsible-content.open {
+      max-height: 500px;
+      overflow-y: auto;
+      margin-top: 16px;
+    }
+    
+    .collapsible-content pre {
+      background: white;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    
+    .search-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .modal {
+      display: none;
+      background: white;
+      border: 3px solid #667eea;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    
+    .modal.show {
+      display: block;
+    }
+    
+    .modal.error {
+      border-color: #f56565;
+      background: #fff5f5;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .modal-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #2d3748;
+    }
+    
+    .modal-close {
+      background: transparent;
+      color: #718096;
+      padding: 4px 12px;
+      font-size: 18px;
+    }
+    
+    .modal-close:hover {
+      background: #f7fafc;
+      color: #2d3748;
+    }
+    
+    .modal-body {
+      color: #4a5568;
+      line-height: 1.6;
+    }
+    
+    .modal-body .detail-row {
+      padding: 8px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .modal-body .detail-row:last-child {
+      border-bottom: none;
+    }
+    
+    .modal-body .detail-label {
+      font-weight: 600;
+      color: #2d3748;
+      display: inline-block;
+      min-width: 120px;
+    }
+    
+    .warning-box {
+      background: #fffaf0;
+      border: 2px solid #ed8936;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 12px;
+    }
+    
+    .warning-icon {
+      font-size: 24px;
+      color: #ed8936;
+    }
+    
+    .warning-text {
+      flex: 1;
+    }
+    
+    .warning-text strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #7c2d12;
+    }
+    
+    .warning-text p {
+      color: #92400e;
+      font-size: 14px;
+    }
+    
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .search-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>👥 User Management</h1>
+        <p class="subtitle">Create, browse, update, and delete users</p>
+      </div>
+      <a href="dashboard.html" class="back-button">
+        ← Back to Dashboard
+      </a>
+    </header>
+    
+    <nav>
+      <div class="nav-links">
+        <a href="#create" class="nav-link active" data-page="create">➕ Create User</a>
+        <a href="#browse" class="nav-link" data-page="browse">👥 Browse Users</a>
+        <a href="#update" class="nav-link" data-page="update">✏️ Update User</a>
+        <a href="#delete" class="nav-link" data-page="delete">🗑️ Delete User</a>
+      </div>
+    </nav>
+    
+    <div class="content">
+      <!-- Create User Page -->
+      <div id="create" class="page active">
+        <h2 style="margin-bottom: 24px;">➕ Create New User</h2>
+        
+        <form id="createUserForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" id="create_name" placeholder="Enter full name">
+            </div>
+            
+            <div class="form-group">
+              <label>Username</label>
+              <input type="text" id="create_username" placeholder="Enter username">
+            </div>
+            
+            <div class="form-group">
+              <label>Email <span style="color: #f56565;">*</span></label>
+              <input type="email" id="create_email" placeholder="Enter email" required>
+            </div>
+            
+            <div class="form-group">
+              <label>Phone</label>
+              <input type="tel" id="create_phone" placeholder="Enter phone number">
+            </div>
+            
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="create_password" placeholder="Enter password">
+            </div>
+            
+            <div class="form-group">
+              <label>User Type <span style="color: #f56565;">*</span></label>
+              <select id="create_userType" required>
+                <option value="">-- Select User Type --</option>
+                <option value="USER">USER</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </div>
+            
+            <div class="form-group full-width">
+              <label>Photo URL</label>
+              <input type="url" id="create_photoUrl" placeholder="Enter photo URL (optional)">
+            </div>
+          </div>
+          
+          <div class="button-group">
+            <button type="submit">Create User</button>
+            <button type="button" class="secondary" onclick="clearCreateForm()">Clear</button>
+          </div>
+        </form>
+        
+        <!-- Collapsible Raw Response -->
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <h3>Raw Response</h3>
+            <span class="collapsible-icon">▼</span>
+          </div>
+          <div class="collapsible-content">
+            <pre id="create_raw_response">No response yet</pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Browse Users Page -->
+      <div id="browse" class="page">
+        <h2 style="margin-bottom: 24px;">👥 Browse Users</h2>
+        
+        <div class="button-group" style="margin-bottom: 20px;">
+          <button onclick="loadAllUsers()">Load All Users</button>
+          <button onclick="loadActiveUsers()" class="secondary">Load Active Users</button>
+          <button onclick="refreshUserList()" class="secondary">🔄 Refresh</button>
+        </div>
+        
+        <div class="result-box" id="browse_results" style="display: none;">
+          <h3>Users</h3>
+          <div id="browse_user_list"></div>
+        </div>
+        
+        <!-- Collapsible Raw Response -->
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <h3>Raw Response</h3>
+            <span class="collapsible-icon">▼</span>
+          </div>
+          <div class="collapsible-content">
+            <pre id="browse_raw_response">No response yet</pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Update User Page -->
+      <div id="update" class="page">
+        <h2 style="margin-bottom: 24px;">✏️ Update User</h2>
+        
+        <!-- Search Section -->
+        <div class="search-grid">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>Username</label>
+            <input type="text" id="update_search_username" placeholder="Enter username to search">
+          </div>
+          <button onclick="searchUserForUpdate()">🔍 Search</button>
+        </div>
+        
+        <!-- User Preview Modal -->
+        <div id="update_preview_modal" class="modal">
+          <div class="modal-header">
+            <span class="modal-title">👤 User Found</span>
+            <button class="modal-close" onclick="closePreviewAndShowForm()">✕ Close</button>
+          </div>
+          <div class="modal-body" id="update_preview_content"></div>
+        </div>
+        
+        <!-- User Not Found Modal -->
+        <div id="update_notfound_modal" class="modal error">
+          <div class="modal-header">
+            <span class="modal-title">❌ User Not Found</span>
+            <button class="modal-close" onclick="closeNotFoundModal()">✕ Close</button>
+          </div>
+          <div class="modal-body">
+            <p>The user with the specified username does not exist.</p>
+            <p style="margin-top: 8px;">Please check the username and try again.</p>
+          </div>
+        </div>
+        
+        <!-- Update Form (Initially Hidden) -->
+        <form id="updateUserForm" style="display: none;">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" id="update_name" placeholder="Enter new name (leave blank to keep current)">
+            </div>
+            
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="update_email" placeholder="Enter new email (leave blank to keep current)">
+            </div>
+            
+            <div class="form-group">
+              <label>Phone</label>
+              <input type="tel" id="update_phone" placeholder="Enter new phone (leave blank to keep current)">
+            </div>
+            
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="update_password" placeholder="Enter new password (leave blank to keep current)">
+            </div>
+            
+            <div class="form-group">
+              <label>User Type</label>
+              <select id="update_userType">
+                <option value="">-- Keep Current --</option>
+                <option value="USER">USER</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>Photo URL</label>
+              <input type="url" id="update_photoUrl" placeholder="Enter new photo URL (leave blank to keep current)">
+            </div>
+          </div>
+          
+          <div class="button-group">
+            <button type="submit">Update User</button>
+            <button type="button" class="secondary" onclick="clearUpdateForm()">Clear & Hide</button>
+          </div>
+        </form>
+        
+        <!-- Collapsible Raw Response -->
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <h3>Raw Response</h3>
+            <span class="collapsible-icon">▼</span>
+          </div>
+          <div class="collapsible-content">
+            <pre id="update_raw_response">No response yet</pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Delete User Page -->
+      <div id="delete" class="page">
+        <h2 style="margin-bottom: 24px;">🗑️ Delete User</h2>
+        
+        <div class="warning-box">
+          <span class="warning-icon">⚠️</span>
+          <div class="warning-text">
+            <strong>Warning: This action cannot be undone</strong>
+            <p>Deleting a user will permanently remove all their information from the system.</p>
+          </div>
+        </div>
+        
+        <form id="deleteUserForm">
+          <div class="form-group" style="max-width: 500px;">
+            <label>Username</label>
+            <input type="text" id="delete_username" placeholder="Enter username to delete" required>
+          </div>
+          
+          <div class="button-group">
+            <button type="submit" class="danger">Delete User</button>
+            <button type="button" class="secondary" onclick="clearDeleteForm()">Clear</button>
+          </div>
+        </form>
+        
+        <!-- Collapsible Raw Response -->
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <h3>Raw Response</h3>
+            <span class="collapsible-icon">▼</span>
+          </div>
+          <div class="collapsible-content">
+            <pre id="delete_raw_response">No response yet</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- User Details Modal -->
+  <div class="user-details-overlay" id="userDetailsOverlay">
+    <div class="user-details-card">
+      <div class="user-details-header">
+        <h3>👤 User Details</h3>
+        <button class="user-details-close" onclick="closeUserDetailsModal()">✕</button>
+      </div>
+      <div class="user-details-body" id="userDetailsBody">
+        <!-- Details will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Alert Modal -->
+  <div class="alert-overlay" id="alertOverlay">
+    <div class="alert-card" id="alertCard">
+      <div class="alert-icon" id="alertIcon">✓</div>
+      <div class="alert-title" id="alertTitle">Success</div>
+      <div class="alert-message" id="alertMessage">Operation completed successfully!</div>
+      <button class="alert-button" onclick="closeAlertModal()">OK</button>
+    </div>
+  </div>
+  
+  <script src="app-users.js"></script>
+</body>
+</html>

@@ -1,22 +1,26 @@
 package com.basuki.project.tickSkills.service.questions.impl;
 
+import com.basuki.project.tickSkills.dtos.BulkImportQuestionDTO;
+import com.basuki.project.tickSkills.dtos.BulkImportResultDTO;
 import com.basuki.project.tickSkills.dtos.QuestionRequestDTO;
 import com.basuki.project.tickSkills.entities.questions.Category;
+import com.basuki.project.tickSkills.entities.questions.Difficulty;
 import com.basuki.project.tickSkills.entities.questions.Question;
 import com.basuki.project.tickSkills.entities.questions.Tag;
 // ...existing imports...
 import com.basuki.project.tickSkills.repository.questions.CategoryRepository;
 import com.basuki.project.tickSkills.repository.questions.QuestionRepository;
+import com.basuki.project.tickSkills.repository.questions.QuestionSpecification;
 import com.basuki.project.tickSkills.repository.questions.TagRepository;
 import com.basuki.project.tickSkills.service.questions.QuestionsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
-import java.util.Collections;
 
 @Service
 public class QuestionsServiceImpl implements QuestionsService {
@@ -117,29 +121,27 @@ public class QuestionsServiceImpl implements QuestionsService {
     }
 
     @Override
-    public Page<Question> list(String categoryName, String difficulty, String source, String search, Pageable pageable) {
-        return questionRepository.findAll(pageable);
+    public Page<Question> list(String categoryName, String difficulty, String source, String tagName, String search, Pageable pageable) {
+        return questionRepository.findAll(
+                QuestionSpecification.filterBy(categoryName, difficulty, source, tagName, search),
+                pageable
+        );
     }
 
     @Override
     public List<Question> random(int count) {
-        List<Question> all = questionRepository.findAll();
-        Collections.shuffle(all);
-        return all.stream().limit(count).toList();
+        // Use database-level random selection instead of loading all questions
+        return questionRepository.findRandomQuestions(count);
     }
 
     @Override
     public List<Question> findByTagName(String tagName) {
-        return questionRepository.findAll().stream()
-                .filter(q -> q.getTags().stream().anyMatch(t -> t.getName().equals(tagName)))
-                .toList();
+        return questionRepository.findByTagName(tagName);
     }
 
     @Override
     public List<Question> findByCategoryName(String categoryName) {
-        return questionRepository.findAll().stream()
-                .filter(q -> q.getCategory() != null && categoryName.equals(q.getCategory().getName()))
-                .toList();
+        return questionRepository.findByCategoryName(categoryName);
     }
 
     @Override
@@ -164,8 +166,63 @@ public class QuestionsServiceImpl implements QuestionsService {
     @Override
     public List<Question> findByDifficulty(String difficulty) {
         if (difficulty == null) return List.of();
-        return questionRepository.findAll().stream()
-                .filter(q -> q.getDifficulty() != null && difficulty.equalsIgnoreCase(q.getDifficulty().name()))
-                .toList();
+        
+        // Use Specification for filtering instead of loading all questions
+        try {
+            Difficulty diff = Difficulty.valueOf(difficulty.toUpperCase());
+            return questionRepository.findAll((root, query, cb) -> 
+                cb.equal(root.get("difficulty"), diff)
+            );
+        } catch (IllegalArgumentException e) {
+            return List.of(); // Invalid difficulty value
+        }
+    }
+
+    @Override
+    public long getTotalCount() {
+        return questionRepository.count();
+    }
+    
+    @Override
+    @Transactional
+    public BulkImportResultDTO bulkImportQuestions(List<BulkImportQuestionDTO> questions) {
+        long startTime = System.currentTimeMillis();
+        
+        BulkImportResultDTO result = BulkImportResultDTO.builder()
+                .totalQuestions(questions.size())
+                .successfulImports(0)
+                .skippedDuplicates(0)
+                .failedImports(0)
+                .build();
+        
+        // Use existsByTitle for memory-efficient duplicate checking
+        // No need to load all questions into memory
+        
+        for (BulkImportQuestionDTO dto : questions) {
+            try {
+                // Skip if title already exists (database-level check)
+                if (questionRepository.existsByTitle(dto.getTitle())) {
+                    result.setSkippedDuplicates(result.getSkippedDuplicates() + 1);
+                    result.getSkippedTitles().add(dto.getTitle());
+                    continue;
+                }
+                
+                // Convert and create question
+                QuestionRequestDTO requestDTO = dto.toQuestionRequestDTO();
+                create(requestDTO);
+                
+                result.setSuccessfulImports(result.getSuccessfulImports() + 1);
+                
+            } catch (Exception e) {
+                result.setFailedImports(result.getFailedImports() + 1);
+                result.getErrorMessages().add(
+                    String.format("Failed to import '%s': %s", 
+                        dto.getTitle(), e.getMessage())
+                );
+            }
+        }
+        
+        result.setDurationMs(System.currentTimeMillis() - startTime);
+        return result;
     }
 }

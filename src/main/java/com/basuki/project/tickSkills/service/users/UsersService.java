@@ -61,6 +61,11 @@ public class UsersService {
                 .collect(Collectors.toList());
     }
 
+    // Get all users with full details (active and inactive)
+    public List<Users> getAllUsers() {
+        return usersRepository.findAll();
+    }
+
     private Users convertToEntity(UserDTO userDTO) {
         return Users.builder()
                 .name(userDTO.getName())

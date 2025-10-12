@@ -585,6 +585,464 @@ async function findById(){
   }
 }
 
+// ==================== NEW: ADVANCED FILTERING ====================
+
+async function applyAdvancedFilters() {
+  const categoryName = document.getElementById('cat_select')?.value || '';
+  const difficulty = document.getElementById('diff_select')?.value || '';
+  const tagName = document.getElementById('tag_select')?.value || '';
+  const source = document.getElementById('source_select')?.value || '';
+  const search = document.getElementById('title_search')?.value?.trim() || '';
+  
+  // Build query parameters
+  const params = new URLSearchParams();
+  if (categoryName) params.append('categoryName', categoryName);
+  if (difficulty) params.append('difficulty', difficulty);
+  if (tagName) params.append('tagName', tagName);
+  if (source) params.append('source', source);
+  if (search) params.append('search', search);
+  params.append('page', '0');
+  params.append('size', '100');
+  
+  try {
+    const res = await fetch(`${apiBase}?${params}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    
+    const data = await res.json();
+    
+    // Update results count
+    const countSpan = document.getElementById('results_count');
+    if (countSpan) {
+      countSpan.textContent = `(${data.totalElements} question${data.totalElements !== 1 ? 's' : ''} found)`;
+    }
+    
+    // Display results
+    const listDiv = document.getElementById('search_results');
+    if (!data.content || data.content.length === 0) {
+      listDiv.innerHTML = '<div class="empty-state">🔍 No questions match your filters</div>';
+    } else {
+      listDiv.innerHTML = data.content.map(q => `
+        <div class="question-item">
+          <div>
+            <div class="question-title">${q.title}</div>
+            <div class="question-meta">
+              ID: ${q.id}
+              ${q.category ? ` • ${q.category.name}` : ''}
+              ${q.difficulty ? ` • ${q.difficulty}` : ''}
+              ${q.source ? ` • ${q.source}` : ''}
+            </div>
+            ${q.tags && q.tags.length > 0 ? `
+              <div class="question-tags">
+                ${q.tags.map(t => `<span class="tag-badge">${t.name}</span>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+          ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link">🔗</a>` : ''}
+        </div>
+      `).join('');
+    }
+    
+    showRaw(data);
+  } catch(e) {
+    console.error('Failed to apply filters:', e);
+    const listDiv = document.getElementById('search_results');
+    listDiv.innerHTML = `<div style="padding:12px;color:#d32f2f">Failed to load questions: ${e.message}</div>`;
+  }
+}
+
+function clearAllFilters() {
+  // Clear all filter inputs
+  const catSelect = document.getElementById('cat_select');
+  if (catSelect) catSelect.value = '';
+  
+  const diffSelect = document.getElementById('diff_select');
+  if (diffSelect) diffSelect.value = '';
+  
+  const tagSelect = document.getElementById('tag_select');
+  if (tagSelect) tagSelect.value = '';
+  
+  const sourceSelect = document.getElementById('source_select');
+  if (sourceSelect) sourceSelect.value = '';
+  
+  const titleSearch = document.getElementById('title_search');
+  if (titleSearch) titleSearch.value = '';
+  
+  // Clear results
+  const listDiv = document.getElementById('search_results');
+  if (listDiv) listDiv.innerHTML = '';
+  
+  const countSpan = document.getElementById('results_count');
+  if (countSpan) countSpan.textContent = '';
+}
+
+// ==================== NEW: TAG MANAGEMENT ====================
+
+let allTagsData = []; // Store all tags for filtering
+
+async function loadTags() {
+  try {
+    const res = await fetch(`${apiBase}/listTags`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    
+    allTagsData = await res.json();
+    
+    // Populate tag dropdown in Browse page
+    const tagSelect = document.getElementById('tag_select');
+    if (tagSelect) {
+      tagSelect.innerHTML = '<option value="">-- ALL TAGS --</option>';
+      allTagsData.forEach(tag => {
+        tagSelect.innerHTML += `<option value="${tag.name}">${tag.name} (${tag.questionCount || 0})</option>`;
+      });
+    }
+    
+    // Display tags on Tags page
+    displayAllTags();
+    
+    // Calculate and display statistics
+    calculateTagStats();
+    
+    showRaw(allTagsData);
+  } catch(e) {
+    console.error('Failed to load tags:', e);
+  }
+}
+
+function displayAllTags() {
+  const tagsList = document.getElementById('tags_list');
+  if (!tagsList) return;
+  
+  if (allTagsData.length === 0) {
+    tagsList.innerHTML = '<div class="empty-state">No tags available</div>';
+    return;
+  }
+  
+  tagsList.innerHTML = allTagsData.map(tag => 
+    `<span class="tag-badge" onclick="findQuestionsByTag('${tag.name}')" title="Click to view questions">
+      ${tag.name} ${tag.questionCount ? `(${tag.questionCount})` : ''}
+    </span>`
+  ).join('');
+}
+
+function filterTagsList() {
+  const searchInput = document.getElementById('tag_search');
+  if (!searchInput) return;
+  
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  
+  const tagsList = document.getElementById('tags_list');
+  if (!tagsList) return;
+  
+  if (!searchTerm) {
+    displayAllTags();
+    return;
+  }
+  
+  const filtered = allTagsData.filter(tag => 
+    tag.name.toLowerCase().includes(searchTerm)
+  );
+  
+  if (filtered.length === 0) {
+    tagsList.innerHTML = '<div class="empty-state">🔍 No tags match your search</div>';
+  } else {
+    tagsList.innerHTML = filtered.map(tag => 
+      `<span class="tag-badge" onclick="findQuestionsByTag('${tag.name}')" title="Click to view questions">
+        ${tag.name} ${tag.questionCount ? `(${tag.questionCount})` : ''}
+      </span>`
+    ).join('');
+  }
+}
+
+async function findQuestionsByTag(tagName) {
+  try {
+    const res = await fetch(`${apiBase}/byTag/${encodeURIComponent(tagName)}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    
+    const questions = await res.json();
+    
+    const byTagList = document.getElementById('by_tag_list');
+    if (!byTagList) return;
+    
+    if (questions.length === 0) {
+      byTagList.innerHTML = `<div class="empty-state">No questions found for tag: ${tagName}</div>`;
+    } else {
+      byTagList.innerHTML = `
+        <h3>Questions tagged with "${tagName}" (${questions.length})</h3>
+        ${questions.map(q => `
+          <div class="question-item">
+            <div>
+              <div class="question-title">${q.title}</div>
+              <div class="question-meta">
+                ID: ${q.id}
+                ${q.category ? ` • ${q.category.name}` : ''}
+                ${q.difficulty ? ` • ${q.difficulty}` : ''}
+                ${q.source ? ` • ${q.source}` : ''}
+              </div>
+            </div>
+            ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link">🔗</a>` : ''}
+          </div>
+        `).join('')}
+      `;
+    }
+    
+    showRaw(questions);
+  } catch(e) {
+    console.error('Failed to find questions by tag:', e);
+    const byTagList = document.getElementById('by_tag_list');
+    if (byTagList) {
+      byTagList.innerHTML = `<div style="padding:12px;color:#d32f2f">Failed to load questions: ${e.message}</div>`;
+    }
+  }
+}
+
+function calculateTagStats() {
+  const totalTagsSpan = document.getElementById('total_tags');
+  const mostUsedSpan = document.getElementById('most_used_tag');
+  const leastUsedSpan = document.getElementById('least_used_tag');
+  const avgTagsSpan = document.getElementById('avg_tags_per_q');
+  
+  if (!totalTagsSpan) return; // Not on tags page
+  
+  if (allTagsData.length === 0) {
+    totalTagsSpan.textContent = '0';
+    mostUsedSpan.textContent = '-';
+    leastUsedSpan.textContent = '-';
+    avgTagsSpan.textContent = '-';
+    return;
+  }
+  
+  // Total tags
+  totalTagsSpan.textContent = allTagsData.length;
+  
+  // Most used tag
+  const sorted = [...allTagsData].sort((a, b) => (b.questionCount || 0) - (a.questionCount || 0));
+  if (sorted.length > 0 && sorted[0].questionCount) {
+    mostUsedSpan.textContent = `${sorted[0].name} (${sorted[0].questionCount})`;
+  } else {
+    mostUsedSpan.textContent = '-';
+  }
+  
+  // Least used tag
+  const leastUsed = sorted[sorted.length - 1];
+  if (leastUsed && leastUsed.questionCount !== undefined) {
+    leastUsedSpan.textContent = `${leastUsed.name} (${leastUsed.questionCount})`;
+  } else {
+    leastUsedSpan.textContent = '-';
+  }
+  
+  // Average tags per question (approximate)
+  const totalQuestionTags = allTagsData.reduce((sum, tag) => sum + (tag.questionCount || 0), 0);
+  if (totalQuestionTags > 0) {
+    // This is an approximation - actual value would need total unique questions
+    avgTagsSpan.textContent = (totalQuestionTags / allTagsData.length).toFixed(1);
+  } else {
+    avgTagsSpan.textContent = '-';
+  }
+}
+
+// ==================== NEW: BULK IMPORT ====================
+
+async function bulkImportQuestions() {
+  const fileInput = document.getElementById('bulk_file');
+  if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+    alert('⚠️ Please select a JSON file to import');
+    return;
+  }
+  
+  const file = fileInput.files[0];
+  
+  // Validate file type
+  if (!file.name.endsWith('.json')) {
+    alert('⚠️ Please select a valid JSON file');
+    return;
+  }
+  
+  try {
+    // Read file
+    const text = await file.text();
+    const questions = JSON.parse(text);
+    
+    // Validate it's an array
+    if (!Array.isArray(questions)) {
+      alert('⚠️ JSON file must contain an array of questions');
+      return;
+    }
+    
+    if (questions.length === 0) {
+      alert('⚠️ JSON file is empty');
+      return;
+    }
+    
+    // Show loading indicator
+    const resultsDiv = document.getElementById('bulk_results');
+    if (resultsDiv) {
+      resultsDiv.innerHTML = '<div style="padding:20px;text-align:center">⏳ Importing questions... This may take a moment.</div>';
+    }
+    
+    // Send to API
+    const startTime = Date.now();
+    const res = await fetch(`${apiBase}/bulkImport`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(questions)
+    });
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`HTTP ${res.status}: ${errorText}`);
+    }
+    
+    const result = await res.json();
+    const duration = Date.now() - startTime;
+    
+    // Display results
+    if (resultsDiv) {
+      resultsDiv.innerHTML = `
+        <h3>✅ Import Complete!</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:16px 0">
+          <div class="import-stat stat-total">
+            <div style="font-size:32px;font-weight:bold">${result.totalQuestions}</div>
+            <div>Total Questions</div>
+          </div>
+          <div class="import-stat stat-success">
+            <div style="font-size:32px;font-weight:bold">${result.successfulImports}</div>
+            <div>✓ Successfully Imported</div>
+          </div>
+          <div class="import-stat stat-skip">
+            <div style="font-size:32px;font-weight:bold">${result.skippedDuplicates}</div>
+            <div>⊘ Skipped (Duplicates)</div>
+          </div>
+          <div class="import-stat stat-fail">
+            <div style="font-size:32px;font-weight:bold">${result.failedImports}</div>
+            <div>✗ Failed</div>
+          </div>
+        </div>
+        <div style="padding:12px;background:#f5f5f5;border-radius:8px;margin-top:16px">
+          <strong>Duration:</strong> ${(result.durationMs / 1000).toFixed(2)}s (client side: ${(duration / 1000).toFixed(2)}s)
+        </div>
+        ${result.errorMessages && result.errorMessages.length > 0 ? `
+          <div style="margin-top:16px">
+            <details>
+              <summary style="cursor:pointer;color:#d32f2f;font-weight:600">❌ Error Messages (${result.errorMessages.length})</summary>
+              <pre style="background:#ffebee;padding:12px;border-radius:4px;overflow:auto;max-height:200px;margin-top:8px">${result.errorMessages.join('\n')}</pre>
+            </details>
+          </div>
+        ` : ''}
+        ${result.skippedTitles && result.skippedTitles.length > 0 ? `
+          <div style="margin-top:16px">
+            <details>
+              <summary style="cursor:pointer;color:#f57c00;font-weight:600">⊘ Skipped Questions (${result.skippedTitles.length})</summary>
+              <div style="background:#fff3e0;padding:12px;border-radius:4px;overflow:auto;max-height:200px;margin-top:8px">
+                ${result.skippedTitles.map(title => `<div>• ${title}</div>`).join('')}
+              </div>
+            </details>
+          </div>
+        ` : ''}
+      `;
+    }
+    
+    showRaw(result);
+    
+    // Reload tags since new tags may have been created
+    await loadTags();
+    
+  } catch(e) {
+    console.error('Bulk import failed:', e);
+    const resultsDiv = document.getElementById('bulk_results');
+    if (resultsDiv) {
+      resultsDiv.innerHTML = `
+        <div style="padding:20px;background:#ffebee;border-radius:8px;color:#d32f2f">
+          <h3>❌ Import Failed</h3>
+          <p>${e.message}</p>
+        </div>
+      `;
+    }
+    alert('❌ Bulk import failed: ' + e.message);
+  }
+}
+
+async function validateJsonFile() {
+  const fileInput = document.getElementById('bulk_file');
+  if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+    alert('⚠️ Please select a JSON file first');
+    return;
+  }
+  
+  const file = fileInput.files[0];
+  
+  try {
+    const text = await file.text();
+    const questions = JSON.parse(text);
+    
+    if (!Array.isArray(questions)) {
+      alert('❌ Invalid: JSON must be an array of questions');
+      return;
+    }
+    
+    if (questions.length === 0) {
+      alert('❌ Invalid: JSON array is empty');
+      return;
+    }
+    
+    // Validate structure of first few questions
+    const requiredFields = ['title', 'slug', 'difficulty', 'category', 'source', 'tags'];
+    const sampleSize = Math.min(5, questions.length);
+    const errors = [];
+    
+    for (let i = 0; i < sampleSize; i++) {
+      const q = questions[i];
+      const missing = requiredFields.filter(field => !q[field]);
+      if (missing.length > 0) {
+        errors.push(`Question ${i + 1}: Missing fields: ${missing.join(', ')}`);
+      }
+    }
+    
+    // Show preview
+    const previewDiv = document.getElementById('bulk_preview');
+    if (previewDiv) {
+      const preview = questions.slice(0, 3);
+      previewDiv.innerHTML = `
+        <h3>✅ JSON Validation Successful</h3>
+        <div style="padding:12px;background:#e8f5e9;border-radius:8px;margin:16px 0">
+          <strong>Total Questions:</strong> ${questions.length}<br>
+          <strong>Structure:</strong> Valid JSON array<br>
+          ${errors.length > 0 ? `<strong style="color:#d32f2f">Warnings:</strong> ${errors.length} validation issues found` : '<strong style="color:#2e7d32">✓</strong> All required fields present'}
+        </div>
+        ${errors.length > 0 ? `
+          <div style="background:#fff3e0;padding:12px;border-radius:8px;margin-bottom:16px">
+            <strong>⚠️ Validation Warnings:</strong>
+            ${errors.map(err => `<div>• ${err}</div>`).join('')}
+          </div>
+        ` : ''}
+        <h4>Preview (First 3 Questions):</h4>
+        <pre style="background:#f5f5f5;padding:12px;border-radius:8px;overflow:auto;max-height:400px">${JSON.stringify(preview, null, 2)}</pre>
+      `;
+    }
+    
+    showRaw({
+      valid: true,
+      totalQuestions: questions.length,
+      errors: errors,
+      preview: preview
+    });
+    
+  } catch(e) {
+    console.error('JSON validation failed:', e);
+    alert('❌ Invalid JSON: ' + e.message);
+    
+    const previewDiv = document.getElementById('bulk_preview');
+    if (previewDiv) {
+      previewDiv.innerHTML = `
+        <div style="padding:20px;background:#ffebee;border-radius:8px;color:#d32f2f">
+          <h3>❌ JSON Validation Failed</h3>
+          <p>${e.message}</p>
+        </div>
+      `;
+    }
+  }
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
   // Create page
@@ -628,7 +1086,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnRefreshCategories = document.getElementById('btn_refresh_categories');
   if (btnRefreshCategories) btnRefreshCategories.addEventListener('click', loadCategories);
   
-  // Search functionality on Browse page
+  // Search functionality on Browse page (legacy)
   const btnFindCat = document.getElementById('btn_find_cat');
   if (btnFindCat) btnFindCat.addEventListener('click', findByCategory);
   
@@ -638,8 +1096,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnFindById = document.getElementById('btn_find_id');
   if (btnFindById) btnFindById.addEventListener('click', findById);
   
-  // Initialize - load categories
+  // New advanced filter functionality
+  const btnFilterQuestions = document.getElementById('btn_filter_questions');
+  if (btnFilterQuestions) btnFilterQuestions.addEventListener('click', applyAdvancedFilters);
+  
+  const btnClearFilters = document.getElementById('btn_clear_filters');
+  if (btnClearFilters) btnClearFilters.addEventListener('click', clearAllFilters);
+  
+  const btnSearchById = document.getElementById('btn_search_by_id');
+  if (btnSearchById) btnSearchById.addEventListener('click', findById);
+  
+  // Bulk Import page
+  const btnBulkImport = document.getElementById('btn_bulk_import');
+  if (btnBulkImport) btnBulkImport.addEventListener('click', bulkImportQuestions);
+  
+  const btnValidateJson = document.getElementById('btn_validate_json');
+  if (btnValidateJson) btnValidateJson.addEventListener('click', validateJsonFile);
+  
+  // Tags page
+  const btnRefreshTags = document.getElementById('btn_refresh_tags');
+  if (btnRefreshTags) btnRefreshTags.addEventListener('click', loadTags);
+  
+  const tagSearchInput = document.getElementById('tag_search');
+  if (tagSearchInput) {
+    tagSearchInput.addEventListener('input', filterTagsList);
+  }
+  
+  // Initialize - load categories and tags
   loadCategories();
+  loadTags();
 });
 
 // Auto-refresh support (if needed)

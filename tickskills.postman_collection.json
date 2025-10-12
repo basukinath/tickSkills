@@ -1,216 +1,509 @@
 {
 	"info": {
 		"_postman_id": "a8a0b3a0-7b1a-4b1a-8b1a-3a0b1a0b1a0b",
-		"name": "TickSkills API",
+		"name": "TickSkills API v2.0",
+		"description": "Complete API collection for TickSkills - Question & User Management System",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Add Single User",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Aarav Sharma\",\n    \"username\": \"aarav.sharma\",\n    \"password\": \"password123\",\n    \"email\": \"aarav.sharma@example.com\",\n    \"phone\": \"9876543210\",\n    \"userType\": \"ADMIN\"\n}"
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Add Single User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Aarav Sharma\",\n    \"username\": \"aarav.sharma\",\n    \"password\": \"password123\",\n    \"email\": \"aarav.sharma@example.com\",\n    \"phone\": \"9876543210\",\n    \"userType\": \"ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/addUser",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["addUser"]
+						},
+						"description": "Create a new user. Returns plain text: 'username added successfully'"
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/addUser",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"addUser"
+				{
+					"name": "Add Bulk Users",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"name\": \"Diya Patel\",\n        \"username\": \"diya.patel\",\n        \"password\": \"password123\",\n        \"email\": \"diya.patel@example.com\",\n        \"phone\": \"9876543211\",\n        \"userType\": \"ADMIN\"\n    },\n    {\n        \"name\": \"Rohan Kumar\",\n        \"username\": \"rohan.kumar\",\n        \"password\": \"password123\",\n        \"email\": \"rohan.kumar@example.com\",\n        \"phone\": \"9876543212\",\n        \"userType\": \"USER\"\n    }\n]"
+						},
+						"url": {
+							"raw": "http://localhost:8080/addBulkUsers",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["addBulkUsers"]
+						},
+						"description": "Create multiple users at once. Returns plain text with count of users added."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by Username",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/getUser?username=aarav.sharma",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["getUser"],
+							"query": [
+								{
+									"key": "username",
+									"value": "aarav.sharma"
+								}
+							]
+						},
+						"description": "Retrieve a specific user by username. Returns JSON user object."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users (Usernames Only)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/getAllUsers",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["getAllUsers"]
+						},
+						"description": "Get list of all usernames. Returns JSON array of strings."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Active Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/getAllActiveUsers",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["getAllActiveUsers"]
+						},
+						"description": "Get list of active (non-deleted) usernames. Returns JSON array of strings."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users Details (NEW)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/getAllUsersDetails",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["getAllUsersDetails"]
+						},
+						"description": "Get complete details of all users including isDeleted status. Returns JSON array of User objects."
+					},
+					"response": [
+						{
+							"name": "Success Response Example",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/getAllUsersDetails",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "8080",
+									"path": ["getAllUsersDetails"]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"name\": \"Aarav Sharma\",\n        \"username\": \"aarav.sharma\",\n        \"email\": \"aarav.sharma@example.com\",\n        \"phone\": \"9876543210\",\n        \"userType\": \"ADMIN\",\n        \"photoUrl\": null,\n        \"isDeleted\": false,\n        \"createdOn\": \"2024-10-15T10:30:00\",\n        \"createdBy\": \"system\"\n    },\n    {\n        \"id\": 2,\n        \"name\": \"Diya Patel\",\n        \"username\": \"diya.patel\",\n        \"email\": \"diya.patel@example.com\",\n        \"phone\": \"9876543211\",\n        \"userType\": \"USER\",\n        \"photoUrl\": null,\n        \"isDeleted\": true,\n        \"createdOn\": \"2024-10-15T11:00:00\",\n        \"createdBy\": \"admin\"\n    }\n]"
+						}
 					]
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Aarav Sharma Updated\",\n    \"username\": \"aarav.sharma\",\n    \"password\": \"newpassword123\",\n    \"email\": \"aarav.updated@example.com\",\n    \"phone\": \"9876543299\",\n    \"userType\": \"USER\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/updateUser",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["updateUser"]
+						},
+						"description": "Update an existing user. Returns plain text: 'username updated successfully'"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User (Soft Delete)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/deleteUser?username=aarav.sharma",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["deleteUser"],
+							"query": [
+								{
+									"key": "username",
+									"value": "aarav.sharma"
+								}
+							]
+						},
+						"description": "Soft delete a user (sets isDeleted=true). Returns plain text: 'username deleted successfully'"
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Add Bulk Users",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "[\n    {\n        \"name\": \"Diya Patel\",\n        \"username\": \"diya.patel\",\n        \"password\": \"password123\",\n        \"email\": \"diya.patel@example.com\",\n        \"phone\": \"9876543211\",\n        \"userType\": \"ADMIN\"\n    },\n    {\n        \"name\": \"Rohan Kumar\",\n        \"username\": \"rohan.kumar\",\n        \"password\": \"password123\",\n        \"email\": \"rohan.kumar@example.com\",\n        \"phone\": \"9876543212\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Ananya Singh\",\n        \"username\": \"ananya.singh\",\n        \"password\": \"password123\",\n        \"email\": \"ananya.singh@example.com\",\n        \"phone\": \"9876543213\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Vivaan Gupta\",\n        \"username\": \"vivaan.gupta\",\n        \"password\": \"password123\",\n        \"email\": \"vivaan.gupta@example.com\",\n        \"phone\": \"9876543214\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Isha Sharma\",\n        \"username\": \"isha.sharma\",\n        \"password\": \"password123\",\n        \"email\": \"isha.sharma@example.com\",\n        \"phone\": \"9876543215\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Kabir Verma\",\n        \"username\": \"kabir.verma\",\n        \"password\": \"password123\",\n        \"email\": \"kabir.verma@example.com\",\n        \"phone\": \"9876543216\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Myra Reddy\",\n        \"username\": \"myra.reddy\",\n        \"password\": \"password123\",\n        \"email\": \"myra.reddy@example.com\",\n        \"phone\": \"9876543217\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Arjun Nair\",\n        \"username\": \"arjun.nair\",\n        \"password\": \"password123\",\n        \"email\": \"arjun.nair@example.com\",\n        \"phone\": \"9876543218\",\n        \"userType\": \"STANDARD\"\n    },\n    {\n        \"name\": \"Saanvi Joshi\",\n        \"username\": \"saanvi.joshi\",\n        \"password\": \"password123\",\n        \"email\": \"saanvi.joshi@example.com\",\n        \"phone\": \"9876543219\",\n        \"userType\": \"STANDARD\"\n    }\n]"
+			"name": "Question Management",
+			"item": [
+				{
+					"name": "List All Questions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/questions",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions"]
+						},
+						"description": "Get all questions. Returns JSON array of Question objects."
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/addBulkUsers",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"addBulkUsers"
+				{
+					"name": "Get Total Question Count (NEW)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/questions/getTotalQuestions",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions", "getTotalQuestions"]
+						},
+						"description": "Get total count of questions in database. Returns Long number."
+					},
+					"response": [
+						{
+							"name": "Success Response Example",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/questions/getTotalQuestions",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "8080",
+									"path": ["api", "questions", "getTotalQuestions"]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "42"
+						}
 					]
+				},
+				{
+					"name": "Get Random 10 Questions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/questions/random10",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions", "random10"]
+						},
+						"description": "Get 10 random questions. Returns JSON array of Question objects."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Question by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/questions/1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions", "1"]
+						},
+						"description": "Get a specific question by ID. Returns JSON Question object."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Questions by Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/questions/category?category=arrays",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions", "category"],
+							"query": [
+								{
+									"key": "category",
+									"value": "arrays"
+								}
+							]
+						},
+						"description": "Filter questions by category. Returns JSON array of Question objects."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Questions by Difficulty",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/questions/difficulty?difficulty=EASY",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions", "difficulty"],
+							"query": [
+								{
+									"key": "difficulty",
+									"value": "EASY",
+									"description": "Options: EASY, MEDIUM, HARD"
+								}
+							]
+						},
+						"description": "Filter questions by difficulty level. Returns JSON array of Question objects."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Questions by Tag",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/questions/tag?tag=dynamic-programming",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions", "tag"],
+							"query": [
+								{
+									"key": "tag",
+									"value": "dynamic-programming"
+								}
+							]
+						},
+						"description": "Filter questions by tag. Returns JSON array of Question objects."
+					},
+					"response": []
+				},
+				{
+					"name": "List All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/questions/categories",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions", "categories"]
+						},
+						"description": "Get all available categories. Returns JSON array of strings."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Question",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Two Sum\",\n    \"externalUrl\": \"https://leetcode.com/problems/two-sum/\",\n    \"difficulty\": \"EASY\",\n    \"source\": \"LEETCODE\",\n    \"category\": \"arrays\",\n    \"tags\": [\"array\", \"hash-table\"]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/questions",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions"]
+						},
+						"description": "Create a new question. Returns JSON of created Question object."
+					},
+					"response": []
+				},
+				{
+					"name": "Add Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Dynamic Programming\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/questions/categories",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions", "categories"]
+						},
+						"description": "Create a new category. Returns JSON of created Category object."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Question",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Two Sum - Updated\",\n    \"difficulty\": \"MEDIUM\",\n    \"tags\": [\"array\", \"hash-table\", \"sorting\"]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/questions/1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions", "1"]
+						},
+						"description": "Update an existing question. Returns JSON of updated Question object."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Question External URL",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"externalUrl\": \"https://leetcode.com/problems/two-sum-updated/\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/questions/1/url",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions", "1", "url"]
+						},
+						"description": "Update only the external URL of a question. Returns JSON of updated Question object."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Question",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/questions/1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "questions", "1"]
+						},
+						"description": "Delete a question by ID. Returns HTTP 204 No Content on success."
+					},
+					"response": []
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get All Users",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/getAllUsers",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"getAllUsers"
-					]
-				}
-			},
-			"response": []
+			]
 		}
-		,
+	],
+	"variable": [
 		{
-			"name": "Get Question by Slug",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/questions/getSlug/{slug}",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api","questions","getSlug","{slug}"]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Question",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"title\": \"Example\",\n  \"description\": \"Example description\",\n  \"categorySlug\": \"array\",\n  \"tagSlugs\": [\"array\"]\n}"
-				},
-				"url": {
-					"raw": "http://localhost:8080/api/questions/createQuestion",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api","questions","createQuestion"]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update Question by Slug",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"title\": \"Updated title\"\n}"
-				},
-				"url": {
-					"raw": "http://localhost:8080/api/questions/updateSlug/{slug}",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api","questions","updateSlug","{slug}"]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Question by Slug",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/questions/deleteSlug/{slug}",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api","questions","deleteSlug","{slug}"]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Random Questions",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/api/questions/randomCount/10",
-					"protocol": "http",
-					"host": ["localhost"],
-					"port": "8080",
-					"path": ["api","questions","randomCount","10"]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Question",
-			"request": {
-				"method": "POST",
-				"header": [{"key":"Content-Type","value":"application/json"}],
-				"body": {"mode":"raw","raw":"{\n  \"title\": \"Two Sum\",\n  \"externalUrl\": \"https://leetcode.com/problems/two-sum/\",\n  \"difficulty\": \"EASY\",\n  \"source\": \"LEETCODE\",\n  \"categorySlug\": \"arrays\"\n}"},
-				"url": {"raw":"http://localhost:8080/api/questions","protocol":"http","host":["localhost"],"port":"8080","path":["api","questions"]}
-			},
-			"response": []
-		},
-		{
-			"name": "Update Question (updateSlug)",
-			"request": {
-				"method": "PUT",
-				"header": [{"key":"Content-Type","value":"application/json"}],
-				"body": {"mode":"raw","raw":"{\n  \"title\": \"Two Sum - Updated\"\n}"},
-				"url": {"raw":"http://localhost:8080/api/questions/updateSlug/{slug}","protocol":"http","host":["localhost"],"port":"8080","path":["api","questions","updateSlug","{slug}"]}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Question (deleteSlug)",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {"raw":"http://localhost:8080/api/questions/deleteSlug/{slug}","protocol":"http","host":["localhost"],"port":"8080","path":["api","questions","deleteSlug","{slug}"]}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Random Questions",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {"raw":"http://localhost:8080/api/questions/random?count=10","protocol":"http","host":["localhost"],"port":"8080","path":["api","questions","random"],"query":[{"key":"count","value":"10"}]}
-			},
-			"response": []
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
 		}
 	]
 }

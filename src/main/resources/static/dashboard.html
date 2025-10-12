@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TickSkills - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        .dashboard-header h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .dashboard-header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            margin-bottom: 50px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Management Cards Section */
+        .management-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .management-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .management-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .management-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .management-icon {
+            font-size: 3.5em;
+            margin-right: 20px;
+        }
+
+        .management-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .management-description {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .management-features {
+            list-style: none;
+            padding: 0;
+        }
+
+        .management-features li {
+            padding: 8px 0;
+            color: #555;
+            font-size: 1em;
+        }
+
+        .management-features li::before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .management-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .management-button:hover {
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* Loading State */
+        .loading {
+            opacity: 0.6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard-header h1 {
+                font-size: 2.5em;
+            }
+
+            .dashboard-header p {
+                font-size: 1.1em;
+            }
+
+            .management-section {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .stat-icon {
+                font-size: 2em;
+            }
+
+            .stat-value {
+                font-size: 2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .management-card {
+                padding: 25px;
+            }
+
+            .management-icon {
+                font-size: 2.5em;
+            }
+
+            .management-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h1>🎯 TickSkills</h1>
+            <p>Your Complete Management Dashboard</p>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-value" id="stat-questions">—</div>
+                    <div class="stat-label">Total Questions</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value" id="stat-users">—</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">📁</div>
+                    <div class="stat-value" id="stat-categories">—</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" id="stat-active-users">—</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Management Cards Section -->
+        <div class="management-section">
+            <!-- Question Management Card -->
+            <a href="index.html" class="management-card">
+                <div class="management-card-header">
+                    <div class="management-icon">📝</div>
+                    <div class="management-title">Question Management</div>
+                </div>
+                <div class="management-description">
+                    Create, browse, update, and manage all your questions. Search by category, difficulty, or ID.
+                </div>
+                <ul class="management-features">
+                    <li>Create new questions</li>
+                    <li>Browse and search questions</li>
+                    <li>Update existing questions</li>
+                    <li>Delete questions</li>
+                    <li>Manage categories</li>
+                </ul>
+                <span class="management-button">Open Question Management →</span>
+            </a>
+
+            <!-- User Management Card -->
+            <a href="user-management.html" class="management-card">
+                <div class="management-card-header">
+                    <div class="management-icon">👥</div>
+                    <div class="management-title">User Management</div>
+                </div>
+                <div class="management-description">
+                    Create, browse, update, and manage all your users. View active users and manage permissions.
+                </div>
+                <ul class="management-features">
+                    <li>Create new users</li>
+                    <li>Browse all users</li>
+                    <li>Update user details</li>
+                    <li>Delete users</li>
+                    <li>Manage user types (Admin/User)</li>
+                </ul>
+                <span class="management-button">Open User Management →</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const questionsApiBase = '/api/questions';
+        const usersApiBase = '/api/users';
+
+        // Load all statistics on page load
+        async function loadDashboardStats() {
+            await Promise.all([
+                loadQuestionCount(),
+                loadUserCount(),
+                loadCategoryCount(),
+                loadActiveUserCount()
+            ]);
+        }
+
+        // Load total questions count
+        async function loadQuestionCount() {
+            try {
+                const response = await fetch(`${questionsApiBase}/getTotalQuestions`);
+                if (response.ok) {
+                    const count = await response.json();
+                    document.getElementById('stat-questions').textContent = count;
+                } else {
+                    document.getElementById('stat-questions').textContent = '—';
+                }
+            } catch (error) {
+                console.error('Error loading question count:', error);
+                document.getElementById('stat-questions').textContent = '—';
+            }
+        }
+
+        // Load total users count
+        async function loadUserCount() {
+            try {
+                const response = await fetch(`${usersApiBase}/getAllUsers`);
+                if (response.ok) {
+                    const users = await response.json();
+                    document.getElementById('stat-users').textContent = users.length;
+                } else {
+                    document.getElementById('stat-users').textContent = '—';
+                }
+            } catch (error) {
+                console.error('Error loading user count:', error);
+                document.getElementById('stat-users').textContent = '—';
+            }
+        }
+
+        // Load categories count
+        async function loadCategoryCount() {
+            try {
+                const response = await fetch(`${questionsApiBase}/listCategories`);
+                if (response.ok) {
+                    const categories = await response.json();
+                    document.getElementById('stat-categories').textContent = categories.length;
+                } else {
+                    document.getElementById('stat-categories').textContent = '—';
+                }
+            } catch (error) {
+                console.error('Error loading category count:', error);
+                document.getElementById('stat-categories').textContent = '—';
+            }
+        }
+
+        // Load active users count
+        async function loadActiveUserCount() {
+            try {
+                const response = await fetch(`${usersApiBase}/getAllActiveUsers`);
+                if (response.ok) {
+                    const activeUsers = await response.json();
+                    document.getElementById('stat-active-users').textContent = activeUsers.length;
+                } else {
+                    document.getElementById('stat-active-users').textContent = '—';
+                }
+            } catch (error) {
+                console.error('Error loading active user count:', error);
+                document.getElementById('stat-active-users').textContent = '—';
+            }
+        }
+
+        // Load stats when page loads
+        document.addEventListener('DOMContentLoaded', loadDashboardStats);
+    </script>
+</body>
+</html>

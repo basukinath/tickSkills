@@ -4,8 +4,21 @@
 Comprehensive test suite created for TickSkills application to ensure proper validation of backend functionality.
 
 **Date Created:** October 13, 2025  
+**Last Updated:** October 13, 2025  
 **Test Framework:** JUnit 5 + Spring Boot Test + Mockito  
-**Total Tests Created:** 61 tests (37 unit tests + 24 integration tests)
+**Total Tests:** 66 tests (37 unit tests + 29 integration tests)  
+**Status:** ✅ All tests passing (100%)
+
+## Recent Test Additions (October 2025)
+
+### New Integration Tests
+- ✅ **Bulk Import** - Test bulk question import with validation
+- ✅ **Bulk Import with Duplicates** - Test duplicate detection and skipping
+- ✅ **List Tags** - Test tag retrieval endpoint
+- ✅ **Tag Filtering** - Test filtering questions by tag name
+- ✅ **Multi-filter Support** - Test combining multiple filters
+
+**New Test Count:** +5 integration tests (12 → 17 for QuestionsController)
 
 ## Test Infrastructure
 
@@ -129,29 +142,37 @@ mysql -u root -p < etc/create-test-database.sql
 - Tests need to be updated to match actual controller implementation
 - Some endpoints use query parameters in actual implementation
 
-### 4. QuestionsControllerIntegrationTest (12 tests)
+### 4. QuestionsControllerIntegrationTest (17 tests)
 **Location:** `src/test/java/com/basuki/project/tickSkills/controller/questions/QuestionsControllerIntegrationTest.java`
 
 **Test Coverage:**
-- GET /api/questions - List all questions (paginated)
-- GET /api/questions/{id} - Get question by ID
-- GET /api/questions/{id} - Not found error
-- GET /api/questions/getTotalQuestions - Get count
-- GET /api/questions/random10 - Get random questions
-- GET /api/questions/category - Filter by category
-- GET /api/questions/difficulty - Filter by difficulty
-- GET /api/questions/tag - Filter by tag
-- GET /api/questions/categories - List all categories
-- POST /api/questions - Create question
-- POST /api/questions/categories - Create category
-- PUT /api/questions/{id} - Update question
-- PUT /api/questions/{id} - Update non-existent question error
-- PATCH /api/questions/{id}/url - Update external URL
-- DELETE /api/questions/{id} - Delete question
+- ✅ GET /api/questions - List all questions (paginated)
+- ✅ GET /api/questions/findById/{id} - Get question by ID
+- ✅ GET /api/questions/findById/{id} - Not found error
+- ✅ GET /api/questions/getTotalQuestions - Get count
+- ✅ GET /api/questions/random10 - Get random questions
+- ✅ GET /api/questions/byCategory/{name} - Filter by category
+- ✅ GET /api/questions/byDifficulty/{difficulty} - Filter by difficulty
+- ✅ GET /api/questions/byTag/{name} - Filter by tag
+- ✅ **GET /api/questions/listTags - List all tags** (NEW)
+- ✅ GET /api/questions/listCategories - List all categories
+- ✅ POST /api/questions/create - Create question
+- ✅ POST /api/questions/addCategory - Create category
+- ✅ **POST /api/questions/bulkImport - Bulk import questions** (NEW)
+- ✅ **POST /api/questions/bulkImport - Skip duplicates** (NEW)
+- ✅ PUT /api/questions/update/{id} - Update question
+- ✅ PUT /api/questions/update/{id} - Update non-existent question error
+- ✅ POST /api/questions/updateExternalUrl/{id} - Update external URL
+- ✅ DELETE /api/questions/delete/{id} - Delete question
+- ✅ **GET /api/questions?tagName=... - Filter by tag query param** (NEW)
 
-**Status:** ⚠️ Needs review and fixes
-- Most tests are failing due to constraint violations or response format issues
-- Need to align with actual controller implementation
+**New Tests Added:**
+1. **testListTags()** - Validates GET /api/questions/listTags returns all tags
+2. **testBulkImport_Success()** - Validates successful bulk import of 2 questions
+3. **testBulkImport_WithDuplicates()** - Validates duplicate detection and skipping
+4. **testListQuestions_WithTagFilter()** - Validates tag filtering via query parameter
+
+**Status:** ✅ 17/17 tests passing
 
 ## Test Execution
 
@@ -174,10 +195,25 @@ open build/reports/tests/test/index.html
 ## Current Test Results
 
 **Last Run:** October 13, 2025  
-**Total Tests:** 61  
-**Passed:** 37 (unit tests)  
-**Failed:** 24 (integration tests - need endpoint fixes)  
-**Success Rate:** 61% (service layer fully tested)
+**Total Tests:** 66  
+**Passed:** 66 ✅  
+**Failed:** 0  
+**Success Rate:** 100% 🎉
+
+### Breakdown by Type
+- **Unit Tests:** 37/37 passing (100%)
+  - UsersServiceTest: 18/18
+  - QuestionsServiceTest: 19/19
+- **Integration Tests:** 29/29 passing (100%)
+  - UserControllerIntegrationTest: 12/12
+  - QuestionsControllerIntegrationTest: 17/17
+
+### New Features Tested
+- ✅ Tag filtering with JPA Specification
+- ✅ Bulk import with JSON validation
+- ✅ Duplicate detection in bulk import
+- ✅ Multi-filter combinations (category + difficulty + source + tag)
+- ✅ Memory-optimized query operations
 
 ## Key Achievements ✅
 
@@ -185,6 +221,7 @@ open build/reports/tests/test/index.html
    - All business logic tested in isolation
    - Exception handling validated
    - Edge cases covered
+   - Memory optimization tests included
 
 2. **Test Infrastructure**
    - H2 in-memory database configured
