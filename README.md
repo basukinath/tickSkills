@@ -1,14 +1,36 @@
 # TickSkills
 
-TickSkills is a production-ready Spring Boot application for managing questions and users with a modern web interface. It provides comprehensive REST APIs, an intuitive dashboard, and a complete test suite with 100% passing tests.
+TickSkills is a production-ready Spring Boot application for managing questions and users with an advanced practice platform and modern admin interface. It provides comprehensive REST APIs, intuitive dashboards, practice tracking, and a complete test suite with 100% passing tests.
+
+## 🎯 Quick Links
+
+- **Practice Platform:** `http://localhost:8080/practice/index.html`
+- **Admin Dashboard:** `http://localhost:8080/admin/dashboard.html`
+- **Question Management:** `http://localhost:8080/admin/questions/index.html`
+- **User Management:** `http://localhost:8080/admin/users/user-management.html`
+- **API Base:** `http://localhost:8080/api/`
 
 ## Features
 
-### Question Management
+### Practice Platform (User-Facing)
+- **📝 Personal Practice Queue** - Browse 865+ active coding questions
+- **✅ Progress Tracking** - Mark questions as SOLVED/UNSOLVED
+- **📓 Personal Notes** - Save approach notes and insights per question
+- **📊 Statistics Dashboard** - Track solved vs unsolved by difficulty
+- **🔍 Advanced Filtering** - Filter by difficulty, source, tag, status
+- **🏷️ Tag-Based Organization** - Browse by topics (Array, DP, Trees, etc.)
+- **🎯 Category Navigation** - Organized by problem patterns
+- **🔗 Direct Links** - Click titles to open questions on LeetCode/HackerRank
+- **💚 Acceptance Rates** - See community success rates
+- **📱 Responsive Design** - Works on desktop, tablet, mobile
+
+### Admin Platform
+#### Question Management
 - Create, browse, update, and delete questions
 - Search questions by category, difficulty, source, or ID
 - **🏷️ Tag-based filtering** - Filter questions by tags with dropdown selection
 - **📤 Bulk import** - Import thousands of questions via JSON file upload
+- **🔒 Active/Inactive Status** - Control question visibility in practice platform
 - Manage categories with descriptions
 - **⚡ Memory-optimized queries** - Efficient database operations for large datasets
 - Random question selection with database-level randomization
@@ -16,9 +38,9 @@ TickSkills is a production-ready Spring Boot application for managing questions 
 - Tag management with auto-creation
 - **Advanced filtering** - Combine multiple filters (category + difficulty + source + tag)
 - Pagination support with configurable page size
-- **🧠 Practice progress tracking** - End-user question status, notes, and per-tag statistics
+- **📊 Sorting Options** - Sort by difficulty, acceptance rate, or title
 
-### User Management
+#### User Management
 - Create, browse, update, and delete users
 - User type management (Admin/User)
 - Active/Deleted user status tracking (soft delete)
@@ -26,7 +48,7 @@ TickSkills is a production-ready Spring Boot application for managing questions 
 - Bulk user operations
 - Email validation
 
-### Dashboard
+#### Admin Dashboard
 - Live statistics (Total Questions, Users, Categories, Active Users)
 - Quick navigation to management sections
 - Responsive design for all devices
@@ -151,9 +173,14 @@ TickSkills is a production-ready Spring Boot application for managing questions 
    ```
 
 7. **Access the application:**
-   - Dashboard: `http://localhost:8080/dashboard.html`
-   - Question Management: `http://localhost:8080/index.html`
-   - User Management: `http://localhost:8080/user-management.html`
+   
+   **Practice Platform (End Users):**
+   - Main Practice: `http://localhost:8080/practice/index.html`
+   
+   **Admin Interface:**
+   - Dashboard: `http://localhost:8080/admin/dashboard.html`
+   - Question Management: `http://localhost:8080/admin/questions/index.html`
+   - User Management: `http://localhost:8080/admin/users/user-management.html`
 
 ## Testing
 
@@ -276,7 +303,7 @@ Base path: `/api/practice`
 | `POST`   | `/questions/{questionId}/status`      | Update a user's practice status for a question| `UpdatePracticeStatusRequest`    | `PracticeQuestionDTO`        |
 | `POST`   | `/questions/{questionId}/note`        | Save or clear a personal practice note        | `UpdatePracticeNoteRequest`      | `PracticeQuestionDTO`        |
 | `GET`    | `/statistics`                         | Aggregate solved vs unsolved counts           | Query params                     | `PracticeStatisticsDTO`      |
-| `GET`    | `/tags`                               | List available practice tags for filtering    | -                                | `List<String>`               |
+| `GET`    | `/tags`                               | List available practice tags for filtering    | Query params                     | `List<String>`               |
 
 #### Query Parameters for Practice Questions
 
@@ -286,6 +313,16 @@ Base path: `/api/practice`
 - `tag`: Filter by tag name
 - `status`: Filter by progress status (`SOLVED`, `UNSOLVED`)
 - `search`: Case-insensitive title search
+
+**Example:** `/api/practice/questions?username=johndoe&difficulty=EASY&tag=Array&status=UNSOLVED`
+
+### Admin Endpoints
+
+Base path: `/api/admin`
+
+| Method   | Endpoint                              | Description                                   | Request Body                     | Response                     |
+|----------|---------------------------------------|-----------------------------------------------|----------------------------------|------------------------------|
+| `POST`   | `/sync-questions`                     | Sync all questions to users for practice      | -                                | Sync statistics              |
 
 ## Data Models
 
@@ -496,16 +533,37 @@ Base path: `/api/practice`
 
 ## UI Pages
 
-### Dashboard (`dashboard.html`)
+### Practice Platform (`/practice/`)
+
+#### Main Practice Page (`practice/index.html`)
+- **Dashboard Stats:** View Easy/Medium/Hard/Total solved counts
+- **Category Navigation:** Browse questions by category (Arrays, Strings, DP, etc.)
+- **Question Table:** 
+  - ID, Title (clickable to external link), Difficulty, Acceptance Rate
+  - Status badges (Solved/Unsolved)
+  - Action buttons (Mark Solved/Unsolved, Add Note, View Details)
+- **Filtering:**
+  - Difficulty dropdown (All, Easy, Medium, Hard)
+  - Source dropdown (All, LeetCode, HackerRank, GFG)
+  - Tag dropdown (All tags dynamically loaded)
+  - Status filter (All, Solved, Unsolved)
+  - Search by title
+- **Personal Notes:** Add/edit notes per question with modal interface
+- **Question Details Modal:** View full question info including tags, companies, premium status
+
+### Admin Interface (`/admin/`)
+
+#### Dashboard (`admin/dashboard.html`)
 - Entry point with live statistics
 - Quick access cards to Question and User Management
 - Shows: Total Questions, Total Users, Categories, Active Users
 
-### Question Management (`index.html`)
-- **Create Question:** Add new questions with category, difficulty, tags
+#### Question Management (`admin/questions/index.html`)
+- **Create Question:** Add new questions with category, difficulty, tags, active status
 - **Browse & Search:** 
   - Search by category, difficulty, source, or ID
   - **🆕 Filter by tags** - Dropdown with all available tags
+  - **🆕 Sort options** - By difficulty, acceptance rate, or title (asc/desc)
   - **Multi-color tag badges** - Visual tag indicators on each question
   - Combine multiple filters for precise results
 - **🆕 Bulk Import Questions:**
@@ -525,7 +583,7 @@ Base path: `/api/practice`
 - **Delete Question:** Remove questions with confirmation
 - **Categories:** Manage question categories
 
-### User Management (`user-management.html`)
+#### User Management (`admin/users/user-management.html`)
 - **Create User:** Add new users with email and user type (required)
 - **Browse Users:** View all users with status indicators
   - Green background: Active users
@@ -635,10 +693,12 @@ tickSkillsGradle/
 │   ├── main/
 │   │   ├── java/com/basuki/project/tickSkills/
 │   │   │   ├── controller/
+│   │   │   │   ├── admin/AdminController.java (NEW)
 │   │   │   │   ├── practice/PracticeController.java (NEW)
 │   │   │   │   ├── questions/QuestionsController.java
 │   │   │   │   └── users/UserController.java
 │   │   │   ├── service/
+│   │   │   │   ├── admin/DataSyncService.java (NEW)
 │   │   │   │   ├── practice/
 │   │   │   │   │   ├── PracticeService.java (NEW)
 │   │   │   │   │   └── PracticeServiceImpl.java (NEW)
@@ -650,21 +710,21 @@ tickSkillsGradle/
 │   │   │   │   ├── practice/UserQuestionProgressRepository.java (NEW)
 │   │   │   │   ├── questions/
 │   │   │   │   │   ├── QuestionRepository.java
-│   │   │   │   │   ├── QuestionSpecification.java (NEW)
+│   │   │   │   │   ├── QuestionSpecification.java (UPDATED)
 │   │   │   │   │   ├── CategoryRepository.java
 │   │   │   │   │   └── TagRepository.java
-│   │   │   │   └── users/
+│   │   │   │   └── users/UserRepository.java
 │   │   │   ├── entities/
 │   │   │   │   ├── practice/
 │   │   │   │   │   ├── PracticeStatus.java (NEW)
 │   │   │   │   │   └── UserQuestionProgress.java (NEW)
 │   │   │   │   ├── questions/
-│   │   │   │   │   ├── Question.java
+│   │   │   │   │   ├── Question.java (UPDATED - active, acceptanceRate fields)
 │   │   │   │   │   ├── Category.java
 │   │   │   │   │   ├── Tag.java
 │   │   │   │   │   ├── Difficulty.java
 │   │   │   │   │   └── SourcePlatform.java
-│   │   │   │   └── users/
+│   │   │   │   └── users/Users.java
 │   │   │   ├── dtos/
 │   │   │   │   ├── practice/
 │   │   │   │   │   ├── PracticeQuestionDTO.java (NEW)
@@ -686,11 +746,21 @@ tickSkillsGradle/
 │   │   └── resources/
 │   │       ├── application.properties
 │   │       └── static/
-│   │           ├── dashboard.html
-│   │           ├── index.html (UPDATED - Tags, Bulk Import)
-│   │           ├── user-management.html
-│   │           ├── app.js (UPDATED - Tag filtering, Bulk import)
-│   │           └── app-users.js
+│   │           ├── admin/                          # RESTRUCTURED
+│   │           │   ├── dashboard.html             # Admin landing
+│   │           │   ├── questions/                 # Question management
+│   │           │   │   ├── index.html            # MOVED from /index.html
+│   │           │   │   ├── app.js                # MOVED, UPDATED (sorting, filtering)
+│   │           │   │   └── app.css               # MOVED from /app.css
+│   │           │   └── users/                     # User management
+│   │           │       ├── user-management.html  # MOVED
+│   │           │       └── app-users.js          # MOVED
+│   │           └── practice/                       # RENAMED from userUI
+│   │               ├── index.html                 # Practice platform
+│   │               ├── script.js                  # UPDATED (removed icons)
+│   │               ├── styles.css
+│   │               ├── README.md
+│   │               └── tags.txt
 │   └── test/
 │       ├── java/com/basuki/project/tickSkills/
 │       │   ├── controller/
@@ -705,14 +775,22 @@ tickSkillsGradle/
 ├── etc/
 │   ├── create-test-database.sql
 │   ├── leetcode_dsa_questions.json (Sample bulk import data)
-│   ├── TAG_FILTERING_IMPLEMENTATION.md (NEW)
-│   ├── BULK_IMPORT_API_DOCUMENTATION.md (NEW)
-│   ├── BULK_IMPORT_IMPLEMENTATION_SUMMARY.md (NEW)
-│   ├── MEMORY_OPTIMIZATION_SUMMARY.md (NEW)
-│   ├── UI_UPDATES_SUMMARY.md (NEW)
-│   └── UI_VISUAL_GUIDE.md (NEW)
+│   ├── leetcode_questions_updated.json (With acceptance rates & active status)
+│   ├── update_acceptance_rate.sql
+│   ├── update_is_active.sql
+│   ├── ACTIVE_QUESTIONS_FILTER_IMPLEMENTATION.md (NEW)
+│   ├── TAG_FILTERING_IMPLEMENTATION.md
+│   ├── BULK_IMPORT_API_DOCUMENTATION.md
+│   ├── BULK_IMPORT_IMPLEMENTATION_SUMMARY.md
+│   ├── MEMORY_OPTIMIZATION_SUMMARY.md
+│   ├── UI_UPDATES_SUMMARY.md
+│   └── UI_VISUAL_GUIDE.md
+├── DIRECTORY_RESTRUCTURE.md (NEW)
+├── ACCEPTANCE_RATE_UPDATE.md (NEW)
+├── UI_UPDATE_NOTES.md (NEW)
+├── USERUI_UPDATES.md (NEW)
 ├── build.gradle
-├── README.md (UPDATED)
+├── README.md (UPDATED - this file)
 ├── TEST_SUMMARY.md
 ├── TESTING_README.md
 └── MYSQL_TESTING_SETUP.md
@@ -877,14 +955,39 @@ This project is open source and available under the MIT License.
 
 ## Recent Updates (October 2025)
 
-### 🏷️ Tag Filtering System
+### 🗂️ Directory Restructure (v5.0 - Oct 16, 2025)
+- **Admin directory** - All admin features organized under `/admin/`
+  - Dashboard at `/admin/dashboard.html`
+  - Questions at `/admin/questions/index.html`
+  - Users at `/admin/users/user-management.html`
+- **Practice directory** - Renamed `/userUI/` to `/practice/` for clarity
+- **Clean organization** - Related files grouped by feature
+- **Updated navigation** - All links updated to new structure
+- **Documentation** - Complete migration guide in DIRECTORY_RESTRUCTURE.md
+
+### 🔒 Active Questions Filter (v4.5 - Oct 15, 2025)
+- **isActive field** - Control question visibility in practice platform
+- **Backend filtering** - QuestionSpecification filters active=true automatically
+- **Admin control** - Toggle active status in question management
+- **Practice platform** - Only shows 865 active questions
+- **SQL scripts** - Batch update tools for active status
+- **Acceptance rates** - Updated for 3707 questions from LeetCode API
+
+### 🎨 UI Improvements (v4.3 - Oct 14, 2025)
+- **Removed link icons** - Cleaner question display (🔗 → ↗)
+- **Repositioned acceptance rates** - Now next to difficulty
+- **Sorting options** - Sort by difficulty, acceptance rate, or title (asc/desc)
+- **Multi-select filters** - Combine multiple filters seamlessly
+- **Responsive design** - Optimized for all devices
+
+### 🏷️ Tag Filtering System (v4.0)
 - **Dynamic filtering** with JPA Specification API
 - **Tag dropdown** in Browse page with auto-population
 - **Multi-filter support** - Combine category + difficulty + source + tag
 - **Visual tag badges** with 6 color variations
 - **Efficient queries** - Database-level filtering with JOINs
 
-### 📤 Bulk Import Feature
+### 📤 Bulk Import Feature (v3.5)
 - **JSON file upload** - Import thousands of questions at once
 - **Validation before import** - Preview first 3 questions
 - **Duplicate detection** - Automatic skipping with title-based detection
@@ -893,7 +996,15 @@ This project is open source and available under the MIT License.
 - **Error reporting** - Detailed error messages with affected questions
 - **JSON format example** - Syntax-highlighted with field descriptions
 
-### ⚡ Memory Optimizations
+### 🧠 Practice Progress Tracking (v3.0)
+- **Personal practice queue** - Each user has their own question list
+- **Status tracking** - Mark questions as SOLVED/UNSOLVED
+- **Personal notes** - Save approach notes per question
+- **Statistics dashboard** - View solved vs unsolved by difficulty
+- **Filter by status** - Find all unsolved questions quickly
+- **Progress persistence** - All changes saved to database
+
+### ⚡ Memory Optimizations (v2.5)
 - **Database-level randomization** - 99.7% memory reduction
 - **Specification-based filtering** - 70% memory reduction
 - **Efficient duplicate checks** - 99.8% memory reduction
@@ -911,6 +1022,12 @@ This project is open source and available under the MIT License.
 
 ### 📚 Documentation
 - **TAG_FILTERING_IMPLEMENTATION.md** - Complete implementation guide
+### 📚 Documentation (Comprehensive)
+- **DIRECTORY_RESTRUCTURE.md** - Complete migration guide for new structure
+- **ACCEPTANCE_RATE_UPDATE.md** - Acceptance rate implementation details
+- **ACTIVE_QUESTIONS_FILTER_IMPLEMENTATION.md** - Active filter architecture
+- **UI_UPDATE_NOTES.md** - UI improvements and changes
+- **USERUI_UPDATES.md** - Practice platform updates
 - **BULK_IMPORT_API_DOCUMENTATION.md** - API usage examples
 - **MEMORY_OPTIMIZATION_SUMMARY.md** - Performance improvements
 - **UI_UPDATES_SUMMARY.md** - Frontend changes documentation
@@ -918,9 +1035,11 @@ This project is open source and available under the MIT License.
 
 ---
 
-**Version:** 4.0  
-**Last Updated:** October 13, 2025  
+**Version:** 5.0  
+**Last Updated:** October 16, 2025  
+**Branch:** `develop` (active development)  
 **Status:** Production Ready ✅  
-**Test Coverage:** 61+ tests passing (100%) ✅  
-**New Features:** Tag Filtering ✅ Bulk Import ✅ Memory Optimizations ✅
+**Test Coverage:** 65+ tests passing (100%) ✅  
+**Active Questions:** 865 (22.6% of 3,820 total)  
+**Key Features:** Practice Platform ✅ Active Filter ✅ Directory Restructure ✅ Tag Filtering ✅ Bulk Import ✅
 
