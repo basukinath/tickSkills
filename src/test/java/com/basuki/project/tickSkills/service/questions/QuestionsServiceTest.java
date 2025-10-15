@@ -70,6 +70,7 @@ class QuestionsServiceTest {
         testQuestion.setExternalUrl("https://leetcode.com/problems/two-sum/");
         testQuestion.setCategory(testCategory);
         testQuestion.setTags(new HashSet<>(Collections.singletonList(testTag)));
+        testQuestion.setActive(true);  // Set as active question
 
         testRequestDTO = new QuestionRequestDTO();
         testRequestDTO.setTitle("Two Sum");
@@ -309,15 +310,15 @@ class QuestionsServiceTest {
     @Test
     @DisplayName("Should get total question count")
     void testGetTotalCount() {
-        // Given
-        when(questionRepository.count()).thenReturn(42L);
+        // Given - now counting only active questions
+        when(questionRepository.countByActiveTrue()).thenReturn(42L);
 
         // When
         long result = questionsService.getTotalCount();
 
         // Then
         assertThat(result).isEqualTo(42L);
-        verify(questionRepository).count();
+        verify(questionRepository).countByActiveTrue();
     }
 
     @Test

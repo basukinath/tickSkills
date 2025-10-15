@@ -5,35 +5,47 @@ import com.basuki.project.tickSkills.entities.questions.SourcePlatform;
 import com.basuki.project.tickSkills.entities.questions.Category;
 import com.basuki.project.tickSkills.entities.questions.Question;
 import com.basuki.project.tickSkills.entities.questions.Tag;
+import com.basuki.project.tickSkills.entities.users.Users;
+import com.basuki.project.tickSkills.entities.users.UserTypes;
 import com.basuki.project.tickSkills.repository.questions.CategoryRepository;
 import com.basuki.project.tickSkills.repository.questions.QuestionRepository;
 import com.basuki.project.tickSkills.repository.questions.TagRepository;
+import com.basuki.project.tickSkills.repository.users.UsersRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
+@ConditionalOnProperty(value = "tickskills.data.init.enabled", havingValue = "true", matchIfMissing = true)
 public class DataInitializer implements CommandLineRunner {
 
 	private final CategoryRepository categoryRepository;
 	private final TagRepository tagRepository;
 	private final QuestionRepository questionRepository;
+	private final UsersRepository usersRepository;
 
-	public DataInitializer(CategoryRepository categoryRepository, TagRepository tagRepository, QuestionRepository questionRepository) {
+	public DataInitializer(CategoryRepository categoryRepository, TagRepository tagRepository, 
+	                       QuestionRepository questionRepository, UsersRepository usersRepository) {
 		this.categoryRepository = categoryRepository;
 		this.tagRepository = tagRepository;
 		this.questionRepository = questionRepository;
+		this.usersRepository = usersRepository;
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
+		// Create demo user if it doesn't exist
+		createDemoUserIfNotExists();
+		
 		// Read JSON from etc/500_dsa_questions.json (workspace path)
 		File file = new File("etc/500_dsa_questions.json");
 		if (!file.exists()) {
@@ -47,6 +59,23 @@ public class DataInitializer implements CommandLineRunner {
 			try (InputStream is = new java.io.FileInputStream(file)) {
 				seedFromStream(is);
 			}
+		}
+	}
+	
+	private void createDemoUserIfNotExists() {
+		if (!usersRepository.existsByUsername("demo-user")) {
+			Users demoUser = Users.builder()
+					.username("demo-user")
+					.name("Demo User")
+					.email("demo@tickskills.com")
+					.password("demo123") // In production, this should be hashed
+					.userType(UserTypes.USER)
+					.createdOn(LocalDateTime.now())
+					.createdBy("system")
+					.isDeleted(false)
+					.build();
+			usersRepository.save(demoUser);
+			System.out.println("✓ Created demo user: demo-user");
 		}
 	}
 

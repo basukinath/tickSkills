@@ -1,58 +1,236 @@
-# TickSkills
+# Tick Skill for Practice - Coding Practice Platform UI
 
-TickSkills is a production-ready Spring Boot application for managing questions and users with a modern web interface. It provides comprehensive REST APIs, an intuitive dashboard, and a complete test suite with 100% passing tests.
+A modern, interactive coding practice platform interface built with HTML5, CSS3, and JavaScript. This project provides a complete user interface for coding problem practice with advanced filtering, statistics tracking, and a responsive design.
 
-## Features
+## 🎯 Overview
 
-### Question Management
-- Create, browse, update, and delete questions
-- Search questions by category, difficulty, source, or ID
-- **🏷️ Tag-based filtering** - Filter questions by tags with dropdown selection
-- **📤 Bulk import** - Import thousands of questions via JSON file upload
-- Manage categories with descriptions
-- **⚡ Memory-optimized queries** - Efficient database operations for large datasets
-- Random question selection with database-level randomization
-- External URL support for questions
-- Tag management with auto-creation
-- **Advanced filtering** - Combine multiple filters (category + difficulty + source + tag)
-- Pagination support with configurable page size
-- **🧠 Practice progress tracking** - End-user question status, notes, and per-tag statistics
+This is a frontend-only implementation of a coding practice platform similar to LeetCode/NeetCode. It features a dark theme with glassmorphism effects, interactive statistics, comprehensive filtering system, and a notes functionality for tracking progress.
 
-### User Management
-- Create, browse, update, and delete users
-- User type management (Admin/User)
-- Active/Deleted user status tracking (soft delete)
-- User profile with photos
-- Bulk user operations
-- Email validation
+## 📁 Project Structure
 
-### Dashboard
-- Live statistics (Total Questions, Users, Categories, Active Users)
-- Quick navigation to management sections
-- Responsive design for all devices
-- Real-time data updates
+```
+/
+├── index.html          # Main HTML structure
+├── styles.css          # Complete CSS styling with animations
+├── script.js           # Core JavaScript functionality
+├── tags.txt           # Legacy placeholder (tags now loaded from backend API)
+└── README.md          # This documentation
+```
 
-### Modern UI
-- Purple gradient theme with modern design
-- Card-based layout with smooth transitions
-- **🏷️ Tag filtering** - Visual tag dropdown with auto-populated options
-- **📤 Bulk Import page** - Upload JSON files with validation and preview
-- **🏷️ Tags page** - Comprehensive tag management and statistics
-- **Syntax-highlighted JSON examples** - Clear format documentation
-- **Multi-color tag badges** - Visual tag organization (6 color schemes)
-- Collapsible response sections
-- Search-first update workflow with preview modals
-- Status indicators for users (Active/Deleted)
-- **Responsive design** - Desktop, tablet, and mobile optimized
-- **Loading states** - Visual feedback for async operations
+## 🚀 Core Features
 
-### Testing & Quality Assurance
-- **61+ comprehensive tests** with 100% pass rate
+### 🎨 Visual Design
+- **Dark theme** with purple gradient accents
+- **Glassmorphism effects** with backdrop blur and transparency
+- **Responsive design** - Works on desktop, tablet, and mobile
+- **Smooth animations** and hover effects
+- **Auto-sizing buttons** that adapt to content length
+
+### 📊 Interactive Statistics Dashboard
+- **Circular progress indicators** for Easy/Medium/Hard problems
+- **Clickable stat cards** that filter problems by difficulty
+- **Real-time updates** when problems are marked as solved
+- **Visual feedback** with active states
+
+### 🔍 Advanced Filtering System
+- **Difficulty Filter**: Easy, Medium, Hard with problem counts
+- **Status Filter**: All Problems, Unsolved Only, Solved Only
+- **Tag-based Filtering**: Dynamically loaded tags from backend with random colors
+- **Combined Filtering**: All filters work together seamlessly
+- **Auto-scroll**: Automatically scrolls to results when filters are applied
+
+### 📝 Notes Functionality
+- **Rich text editor** for taking notes on problems
+- **Modal interface** with smooth animations
+- **Local storage** integration (ready for backend connection)
+
+### 🏷️ Tag System
+- **Backend-driven tag list** always in sync with available questions
+- **Auto-sizing buttons** that fit content naturally
+- **6 random color variations** for visual organization
+- **Multi-select capability** with visual feedback
+- **Scrollable container** with custom scrollbar styling
+
+## 💻 Technical Implementation
+
+### HTML Structure
+```html
+<!-- Main Layout -->
+<header>          <!-- Navigation with centered title -->
+<div class="container">
+  <aside>         <!-- Sidebar with Practice Problems -->
+  <main>          <!-- Main content area -->
+    <section>     <!-- Stats Overview -->
+    <section>     <!-- Filter Sections -->
+    <section>     <!-- Progress Bar -->
+    <section>     <!-- Problems Table -->
+</div>
+<div class="modal"> <!-- Notes Modal -->
+```
+
+### CSS Architecture
+- **CSS Custom Properties** for consistent theming
+- **Flexbox and Grid** layouts for responsive design
+- **Glassmorphism effects** using backdrop-filter
+- **Smooth transitions** and hover animations
+- **Mobile-first** responsive breakpoints
+
+### JavaScript Functionality
+```javascript
+// Core Data Structure
+problemsData = [
+  {
+    id: number,
+    title: string,
+    difficulty: 'easy'|'medium'|'hard',
+    tags: array,
+    status: 'solved'|'unsolved',
+    url: string
+  }
+]
+
+// Key Functions
+- applyAllFilters()     // Combines all active filters
+- renderProblems()      // Updates UI with filtered results
+- handleStatCardClick() // Statistics card interactions
+- toggleTag()           // Tag selection logic
+- scrollToProblemsSection() // Auto-scroll functionality
+```
+
+## 🔧 Integration Guide
+
+### For Existing Projects
+
+#### 1. **Backend Integration Points**
+```javascript
+// Replace mock data with API calls
+async function fetchProblems() {
+  const response = await fetch('/api/problems');
+  return response.json();
+}
+
+// Update problem status
+async function updateProblemStatus(problemId, status) {
+  await fetch(`/api/problems/${problemId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status })
+  });
+}
+```
+
+#### 2. **Authentication Integration**
+```javascript
+// Add user context
+const currentUser = await getCurrentUser();
+document.querySelector('.main-title').textContent = 
+  `Welcome ${currentUser.name} - Tick Skill for Practice`;
+```
+
+#### 3. **Notes System Backend**
+```javascript
+// Connect notes to backend
+async function saveNote(problemId, content) {
+  await fetch(`/api/problems/${problemId}/notes`, {
+    method: 'POST',
+    body: JSON.stringify({ content })
+  });
+}
+```
+
+#### 4. **Statistics API Integration**
+```javascript
+// Real-time statistics
+async function updateStatistics() {
+  const stats = await fetch('/api/user/statistics').then(r => r.json());
+  updateProgressBars(stats);
+}
+```
+
+### 📱 Responsive Breakpoints
+- **Desktop**: 1024px and above
+- **Tablet**: 768px - 1023px
+- **Mobile**: Below 768px
+
+### 🎨 Color Scheme Variables
+```css
+:root {
+  --primary-bg: #0f0f23;
+  --secondary-bg: #1a1a2e;
+  --accent-color: #00d4aa;
+  --text-primary: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+}
+```
+
+## 🔄 Data Flow
+
+1. **Initialization**: Load problems data and populate UI
+2. **Filter Application**: User selects filters → `applyAllFilters()` → `renderProblems()`
+3. **Statistics Update**: User marks problems → Update status → Recalculate stats
+4. **Auto-scroll**: Any filter change triggers scroll to results
+5. **Notes**: Click note icon → Open modal → Save to storage/backend
+
+## 🛠️ Customization Options
+
+### Adding New Tags
+Update `availableTags` array in `script.js`:
+```javascript
+const availableTags = [
+  // Add your custom tags here
+  "Custom Algorithm",
+  "Your Framework"
+];
+```
+
+### Modifying Color Schemes
+Update tag color variations in `styles.css`:
+```css
+.tag-btn:nth-child(6n+7) { 
+  background: linear-gradient(135deg, #your-color, #your-accent); 
+}
+```
+
+### Custom Difficulty Levels
+Modify the difficulty dropdown in `index.html` and update filtering logic.
+
+## 🚀 Quick Start for Integration
+
+1. **Copy Files**: Copy `index.html`, `styles.css`, and `script.js` to your project
+2. **Update API Endpoints**: Replace mock data with your backend APIs
+3. **Configure Authentication**: Add user authentication logic
+4. **Database Integration**: Connect problem status updates to your database
+5. **Customize Branding**: Update colors, logos, and text as needed
+
+## 📋 Dependencies
+
+- **None** - Pure HTML5, CSS3, and Vanilla JavaScript
+- **Optional**: Font Awesome for additional icons
+- **Backend Ready**: Designed for easy REST API integration
+
+## 🌟 Key Benefits
+
+- **Zero Dependencies**: No frameworks or libraries required
+- **Performance Optimized**: Efficient DOM manipulation and filtering
+- **Accessibility**: Keyboard navigation and screen reader friendly
+- **Scalable**: Handles thousands of problems efficiently
+- **Modern UX**: Intuitive interface with smooth interactions
+- **Mobile Optimized**: Touch-friendly responsive design
+
+## 🔮 Future Enhancement Ideas
+
+- **Dark/Light Theme Toggle**
+- **Advanced Search with Autocomplete**
+- **Problem Difficulty Estimation**
+- **Study Plan Generation**
+- **Progress Analytics Dashboard**
+- **Social Features (Sharing, Comments)**
+- **Code Editor Integration**
+
+This UI provides a solid foundation for building a complete coding practice platform and can be easily integrated with any backend technology stack.
 - Unit tests for service layer (37+ tests)
 - Integration tests for REST endpoints (24+ tests)
 - **Tag filtering tests** - Validates dynamic query building
 - **Bulk import tests** - Validates JSON parsing and batch processing
-- **Practice workflow tests** - Validates per-user progress tracking and statistics
 - **Memory optimization tests** - Ensures efficient database queries
 - MySQL test database for production parity
 - Automated testing with JUnit 5 and Mockito
@@ -137,7 +315,7 @@ TickSkills is a production-ready Spring Boot application for managing questions 
 5. **Build the application:**
    ```bash
    ./gradlew build
-  # This runs all 65 tests and builds the JAR
+   # This runs all 61 tests and builds the JAR
    ```
 
 6. **Run the application:**
@@ -160,7 +338,7 @@ TickSkills is a production-ready Spring Boot application for managing questions 
 ### Run All Tests
 
 ```bash
-# Run all 65 tests
+# Run all 61 tests
 ./gradlew test
 
 # Run with detailed output
@@ -172,7 +350,7 @@ TickSkills is a production-ready Spring Boot application for managing questions 
 
 ### Test Coverage
 
-**Total: 65 tests (100% passing ✅)**
+**Total: 61 tests (100% passing ✅)**
 
 #### Unit Tests (37 tests)
 - **UsersService** (18 tests)
@@ -189,7 +367,7 @@ TickSkills is a production-ready Spring Boot application for managing questions 
   - Random question selection
   - Pagination
 
-#### Integration Tests (28 tests)
+#### Integration Tests (24 tests)
 - **UserController** (12 tests)
   - REST endpoint testing
   - Path variable and request body validation
@@ -201,11 +379,6 @@ TickSkills is a production-ready Spring Boot application for managing questions 
   - Database integration
   - Transaction rollback
   - Response format validation
-- **PracticeController** (4 tests)
-  - Progress lifecycle (status + notes)
-  - Statistics aggregation validation
-  - Tag filtering and default status checks
-  - Multi-user state isolation
 
 ### Test Documentation
 
@@ -266,27 +439,6 @@ Base path: `/api/questions`
 
 **Example:** `/api/questions?categoryName=Arrays&difficulty=EASY&tagName=Array&page=0&size=20`
 
-### Practice Endpoints
-
-Base path: `/api/practice`
-
-| Method   | Endpoint                              | Description                                   | Request Body                     | Response                     |
-|----------|---------------------------------------|-----------------------------------------------|----------------------------------|------------------------------|
-| `GET`    | `/questions`                          | List questions with user-specific progress    | Query params                     | `List<PracticeQuestionDTO>`  |
-| `POST`   | `/questions/{questionId}/status`      | Update a user's practice status for a question| `UpdatePracticeStatusRequest`    | `PracticeQuestionDTO`        |
-| `POST`   | `/questions/{questionId}/note`        | Save or clear a personal practice note        | `UpdatePracticeNoteRequest`      | `PracticeQuestionDTO`        |
-| `GET`    | `/statistics`                         | Aggregate solved vs unsolved counts           | Query params                     | `PracticeStatisticsDTO`      |
-| `GET`    | `/tags`                               | List available practice tags for filtering    | -                                | `List<String>`               |
-
-#### Query Parameters for Practice Questions
-
-- `username` *(required)*: User owning the practice queue
-- `difficulty`: Filter by difficulty (EASY, MEDIUM, HARD)
-- `source`: Filter by source platform (LEETCODE, HACKERRANK, GFG, ...)
-- `tag`: Filter by tag name
-- `status`: Filter by progress status (`SOLVED`, `UNSOLVED`)
-- `search`: Case-insensitive title search
-
 ## Data Models
 
 ### UserDTO
@@ -324,66 +476,6 @@ Base path: `/api/practice`
 - `EASY`
 - `MEDIUM`
 - `HARD`
-
-### PracticeQuestionDTO (New)
-
-```json
-{
-  "id": 42,
-  "title": "Two Sum",
-  "difficulty": "EASY",
-  "category": "Arrays & Hashing",
-  "source": "LEETCODE",
-  "externalUrl": "https://leetcode.com/problems/two-sum/",
-  "premium": false,
-  "active": true,
-  "acceptanceRate": 52.5,
-  "companies": ["Amazon", "Microsoft"],
-  "tags": ["Array", "Hash Table"],
-  "status": "UNSOLVED",
-  "note": "Review optimal hashmap approach",
-  "lastUpdated": "2024-12-04T09:45:12"
-}
-```
-
-**Practice Status Values:**
-- `UNSOLVED` *(default)*
-- `SOLVED`
-
-### UpdatePracticeStatusRequest (New)
-
-```json
-{
-  "username": "johndoe",
-  "status": "SOLVED"
-}
-```
-
-### UpdatePracticeNoteRequest (New)
-
-```json
-{
-  "username": "johndoe",
-  "note": "Focus on edge cases before reattempt"
-}
-```
-
-### PracticeStatisticsDTO (New)
-
-```json
-{
-  "username": "johndoe",
-  "totalQuestions": 120,
-  "solvedCount": 45,
-  "unsolvedCount": 75,
-  "easyTotal": 50,
-  "easySolved": 30,
-  "mediumTotal": 40,
-  "mediumSolved": 12,
-  "hardTotal": 30,
-  "hardSolved": 3
-}
-```
 
 ### BulkImportQuestionDTO (New)
 
@@ -479,20 +571,6 @@ Base path: `/api/practice`
 |--------|--------------|-----------------------|
 | id     | BIGINT       | Primary Key, Auto     |
 | name   | VARCHAR(255) | Unique                |
-
-### User Question Progress Table (New)
-
-| Column       | Type         | Constraints                                      |
-|--------------|--------------|--------------------------------------------------|
-| id           | BIGINT       | Primary Key, Auto                                |
-| user_id      | BIGINT       | Foreign Key → `users.id`, Not Null               |
-| question_id  | BIGINT       | Foreign Key → `question.id`, Not Null            |
-| status       | VARCHAR(20)  | Not Null, Defaults to `UNSOLVED`                 |
-| note         | TEXT         | Nullable                                         |
-| created_at   | DATETIME     | Not Null                                         |
-| last_updated | DATETIME     | Not Null                                         |
-
-**Unique Constraint:** `(user_id, question_id)` ensures one progress record per user/question pair.
 
 ## UI Pages
 
@@ -635,19 +713,14 @@ tickSkillsGradle/
 │   ├── main/
 │   │   ├── java/com/basuki/project/tickSkills/
 │   │   │   ├── controller/
-│   │   │   │   ├── practice/PracticeController.java (NEW)
 │   │   │   │   ├── questions/QuestionsController.java
 │   │   │   │   └── users/UserController.java
 │   │   │   ├── service/
-│   │   │   │   ├── practice/
-│   │   │   │   │   ├── PracticeService.java (NEW)
-│   │   │   │   │   └── PracticeServiceImpl.java (NEW)
 │   │   │   │   ├── questions/
 │   │   │   │   │   ├── QuestionsService.java
 │   │   │   │   │   └── impl/QuestionsServiceImpl.java
 │   │   │   │   └── users/UsersService.java
 │   │   │   ├── repository/
-│   │   │   │   ├── practice/UserQuestionProgressRepository.java (NEW)
 │   │   │   │   ├── questions/
 │   │   │   │   │   ├── QuestionRepository.java
 │   │   │   │   │   ├── QuestionSpecification.java (NEW)
@@ -655,9 +728,6 @@ tickSkillsGradle/
 │   │   │   │   │   └── TagRepository.java
 │   │   │   │   └── users/
 │   │   │   ├── entities/
-│   │   │   │   ├── practice/
-│   │   │   │   │   ├── PracticeStatus.java (NEW)
-│   │   │   │   │   └── UserQuestionProgress.java (NEW)
 │   │   │   │   ├── questions/
 │   │   │   │   │   ├── Question.java
 │   │   │   │   │   ├── Category.java
@@ -666,11 +736,6 @@ tickSkillsGradle/
 │   │   │   │   │   └── SourcePlatform.java
 │   │   │   │   └── users/
 │   │   │   ├── dtos/
-│   │   │   │   ├── practice/
-│   │   │   │   │   ├── PracticeQuestionDTO.java (NEW)
-│   │   │   │   │   ├── PracticeStatisticsDTO.java (NEW)
-│   │   │   │   │   ├── UpdatePracticeNoteRequest.java (NEW)
-│   │   │   │   │   └── UpdatePracticeStatusRequest.java (NEW)
 │   │   │   │   ├── QuestionRequestDTO.java
 │   │   │   │   ├── BulkImportQuestionDTO.java (NEW)
 │   │   │   │   ├── BulkImportResultDTO.java (NEW)
@@ -694,7 +759,6 @@ tickSkillsGradle/
 │   └── test/
 │       ├── java/com/basuki/project/tickSkills/
 │       │   ├── controller/
-│       │   │   ├── practice/PracticeControllerIntegrationTest.java (NEW)
 │       │   │   ├── questions/QuestionsControllerIntegrationTest.java
 │       │   │   └── users/UserControllerIntegrationTest.java
 │       │   └── service/
