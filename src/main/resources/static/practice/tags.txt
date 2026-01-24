@@ -1,0 +1,3 @@
+This file is no longer used.
+Tags are now fetched dynamically from the backend via `/api/practice/tags`.
+The contents are intentionally left blank to avoid relying on static data.

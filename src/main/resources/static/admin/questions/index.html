@@ -3,7 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>TickSkills - Question Management</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>TickSkills - Question Management v2.0 (Active Questions)</title>
+  <!-- Version: 2.0 - Active Questions Mode - Updated: 2025-10-16 -->
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -460,7 +464,7 @@
         <h1>🎯 TickSkills</h1>
         <p class="subtitle">Question Management System</p>
       </div>
-      <a href="dashboard.html" class="back-button">
+      <a href="../dashboard.html" class="back-button">
         ← Back to Dashboard
       </a>
     </header>
@@ -482,6 +486,14 @@
       <!-- Home Page -->
       <div id="home" class="page active">
         <h2 style="margin-bottom: 24px; color: #2d3748;">Welcome to TickSkills</h2>
+        
+        <!-- Active Questions Notice -->
+        <div class="alert" style="background: #d4edda; border-color: #c3e6cb; color: #155724; margin-bottom: 16px;">
+          <strong>✓ Active Questions Mode:</strong> The system is now filtering to show only <strong>active questions</strong>. 
+          All endpoints return curated DSA questions for optimal practice. 
+          <span style="opacity: 0.8;">(865 active out of 3820 total)</span>
+        </div>
+        
         <div class="alert alert-info">
           <strong>Quick Start:</strong> Use the navigation above to manage your coding questions.
         </div>
@@ -590,7 +602,11 @@
       
       <!-- Browse Questions Page -->
       <div id="browse" class="page">
-        <h2 style="margin-bottom: 24px; color: #2d3748;">Browse & Search Questions</h2>
+        <h2 style="margin-bottom: 16px; color: #2d3748;">Browse & Search Questions</h2>
+        
+        <div class="alert" style="background: #e7f3ff; border-color: #b3d9ff; color: #004085; margin-bottom: 20px; font-size: 13px;">
+          <strong>ℹ️ Note:</strong> All searches and filters show <strong>active questions only</strong> (865 curated DSA questions).
+        </div>
         
         <!-- Advanced Search Section -->
         <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
@@ -633,6 +649,19 @@
             <div style="grid-column: 1 / -1;">
               <label>Search by Title</label>
               <input id="title_search" type="text" placeholder="Enter keywords to search in title..." />
+            </div>
+            
+            <div>
+              <label>Sort By</label>
+              <select id="sort_by">
+                <option value="">-- DEFAULT --</option>
+                <option value="difficulty_asc">Difficulty (Easy → Hard)</option>
+                <option value="difficulty_desc">Difficulty (Hard → Easy)</option>
+                <option value="acceptance_asc">Acceptance Rate (Low → High)</option>
+                <option value="acceptance_desc">Acceptance Rate (High → Low)</option>
+                <option value="title_asc">Title (A → Z)</option>
+                <option value="title_desc">Title (Z → A)</option>
+              </select>
             </div>
           </div>
           
@@ -1040,7 +1069,7 @@
     </div>
   </div>
   
-  <script src="/app.js"></script>
+  <script src="app.js"></script>
   <script>
     // Collapsible toggle function
     function toggleCollapsible(header) {

@@ -5,6 +5,7 @@ import com.basuki.project.tickSkills.entities.questions.Category;
 import com.basuki.project.tickSkills.entities.questions.Difficulty;
 import com.basuki.project.tickSkills.entities.questions.Question;
 import com.basuki.project.tickSkills.entities.questions.SourcePlatform;
+import com.basuki.project.tickSkills.repository.practice.UserQuestionProgressRepository;
 import com.basuki.project.tickSkills.repository.questions.CategoryRepository;
 import com.basuki.project.tickSkills.repository.questions.QuestionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,6 +42,9 @@ class QuestionsControllerIntegrationTest {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private UserQuestionProgressRepository progressRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private Question testQuestion;
@@ -48,6 +52,7 @@ class QuestionsControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        progressRepository.deleteAll();
         questionRepository.deleteAll();
         categoryRepository.deleteAll();
 

@@ -7,6 +7,7 @@ import com.basuki.project.tickSkills.entities.questions.Category;
 import com.basuki.project.tickSkills.entities.questions.Difficulty;
 import com.basuki.project.tickSkills.entities.questions.Question;
 import com.basuki.project.tickSkills.entities.questions.Tag;
+import com.basuki.project.tickSkills.exceptions.TickSkillExceptions;
 // ...existing imports...
 import com.basuki.project.tickSkills.repository.questions.CategoryRepository;
 import com.basuki.project.tickSkills.repository.questions.QuestionRepository;
@@ -69,7 +70,9 @@ public class QuestionsServiceImpl implements QuestionsService {
 
     @Override
     public Question update(Long id, QuestionRequestDTO request) {
-        Question existing = questionRepository.findById(id).orElse(null);
+        Question existing = questionRepository.findById(id)
+            .filter(Question::isActive)  // CRITICAL: Only allow updating ACTIVE questions
+            .orElse(null);
         if (existing == null) return null;
         
         // Only update fields that are provided (not null)
@@ -112,12 +115,23 @@ public class QuestionsServiceImpl implements QuestionsService {
 
     @Override
     public void delete(Long id) {
-        questionRepository.deleteById(id);
+        // CRITICAL SAFETY: Verify question exists and is INACTIVE before deleting
+        // We should NEVER delete active questions - they should be deactivated first
+        Question question = questionRepository.findById(id).orElse(null);
+        if (question != null && !question.isActive()) {
+            questionRepository.deleteById(id);
+        } else if (question != null && question.isActive()) {
+            throw new TickSkillExceptions("Cannot delete active question. Deactivate it first.");
+        }
+        // If question doesn't exist, silently succeed (idempotent delete)
     }
 
     @Override
     public Question findById(Long id) {
-        return questionRepository.findById(id).orElse(null);
+        // CRITICAL: Only return ACTIVE questions to users
+        return questionRepository.findById(id)
+            .filter(Question::isActive)  // Filter out inactive questions
+            .orElse(null);
     }
 
     @Override
@@ -157,7 +171,9 @@ public class QuestionsServiceImpl implements QuestionsService {
 
     @Override
     public Question updateExternalUrl(Long id, String externalUrl) {
-        Question q = questionRepository.findById(id).orElse(null);
+        Question q = questionRepository.findById(id)
+            .filter(Question::isActive)  // CRITICAL: Only allow updating ACTIVE questions
+            .orElse(null);
         if (q == null) return null;
         q.setExternalUrl(externalUrl);
         return questionRepository.save(q);
@@ -167,11 +183,14 @@ public class QuestionsServiceImpl implements QuestionsService {
     public List<Question> findByDifficulty(String difficulty) {
         if (difficulty == null) return List.of();
         
-        // Use Specification for filtering instead of loading all questions
+        // Use Specification for filtering with active status
         try {
             Difficulty diff = Difficulty.valueOf(difficulty.toUpperCase());
             return questionRepository.findAll((root, query, cb) -> 
-                cb.equal(root.get("difficulty"), diff)
+                cb.and(
+                    cb.equal(root.get("difficulty"), diff),
+                    cb.equal(root.get("active"), true)  // Only active questions
+                )
             );
         } catch (IllegalArgumentException e) {
             return List.of(); // Invalid difficulty value
@@ -180,7 +199,8 @@ public class QuestionsServiceImpl implements QuestionsService {
 
     @Override
     public long getTotalCount() {
-        return questionRepository.count();
+        // Return only active questions count
+        return questionRepository.countByActiveTrue();
     }
     
     @Override

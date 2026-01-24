@@ -22,6 +22,9 @@ public class QuestionSpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            // ALWAYS filter for active questions only
+            predicates.add(criteriaBuilder.equal(root.get("active"), true));
+
             // Filter by category name
             if (categoryName != null && !categoryName.trim().isEmpty()) {
                 predicates.add(criteriaBuilder.equal(

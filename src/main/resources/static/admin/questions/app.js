@@ -1,6 +1,12 @@
 const apiBase = '/api/questions';
 let lastCategorySelected = null;
 
+// Helper function to format acceptance rate
+function formatAcceptanceRate(rate) {
+  if (!rate) return '';
+  return ` • <span style="color: #10b981; font-weight: 500;">${rate}%</span>`;
+}
+
 // Helper function to show raw JSON in all response areas
 function showRaw(obj){
   const jsonStr = JSON.stringify(obj, null, 2);
@@ -101,15 +107,17 @@ async function loadRandom10(targetElementId = 'random_list'){
       listDiv.innerHTML = data.map(q=>`
         <div class="question-item">
           <div>
-            <div class="question-title">${q.title}</div>
+            <div class="question-title">
+              ${q.title}
+              ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link" style="margin-left: 8px; font-size: 0.9em;">↗</a>` : ''}
+            </div>
             <div class="question-meta">
               ID: ${q.id}
-              ${q.difficulty ? ` • ${q.difficulty}` : ''}
+              ${q.difficulty ? ` • ${q.difficulty}` : ''}${formatAcceptanceRate(q.acceptanceRate)}
               ${q.category ? ` • ${q.category.name}` : ''}
               ${q.source ? ` • ${q.source}` : ''}
             </div>
           </div>
-          ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link">🔗</a>` : ''}
         </div>
       `).join('');
     }
@@ -218,14 +226,16 @@ async function loadQuestionsForCategory(categoryName){
       listDiv.innerHTML = data.map(q => `
         <div class="question-item">
           <div>
-            <div class="question-title">${q.title}</div>
+            <div class="question-title">
+              ${q.title}
+              ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link" style="margin-left: 8px; font-size: 0.9em;">↗</a>` : ''}
+            </div>
             <div class="question-meta">
               ID: ${q.id}
-              ${q.difficulty ? ` • ${q.difficulty}` : ''}
+              ${q.difficulty ? ` • ${q.difficulty}` : ''}${formatAcceptanceRate(q.acceptanceRate)}
               ${q.source ? ` • ${q.source}` : ''}
             </div>
           </div>
-          ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link">🔗</a>` : ''}
         </div>
       `).join('');
     }
@@ -283,6 +293,7 @@ function showQuestionPreview(question) {
       <div>
         <strong style="color: #667eea;">Title:</strong> 
         <span style="color: #2d3748;">${question.title || '—'}</span>
+        ${question.externalUrl ? `<a href="${question.externalUrl}" target="_blank" style="color: #667eea; margin-left: 12px; font-size: 0.9em;" title="Open link">↗</a>` : ''}
       </div>
       <div>
         <strong style="color: #667eea;">Category:</strong> 
@@ -291,14 +302,11 @@ function showQuestionPreview(question) {
       <div>
         <strong style="color: #667eea;">Difficulty:</strong> 
         <span style="color: #2d3748;">${question.difficulty || '—'}</span>
+        ${question.acceptanceRate ? `<span style="color: #10b981; font-weight: 500; margin-left: 12px;">${question.acceptanceRate}%</span>` : ''}
       </div>
       <div>
         <strong style="color: #667eea;">Source:</strong> 
         <span style="color: #2d3748;">${question.source || '—'}</span>
-      </div>
-      <div>
-        <strong style="color: #667eea;">External URL:</strong> 
-        ${question.externalUrl ? `<a href="${question.externalUrl}" target="_blank" style="color: #667eea;">🔗 ${question.externalUrl}</a>` : '<span style="color: #718096;">—</span>'}
       </div>
       <div>
         <strong style="color: #667eea;">Tags:</strong> 
@@ -485,14 +493,16 @@ async function findByCategory(){
       listDiv.innerHTML = data.map(q => `
         <div class="question-item">
           <div>
-            <div class="question-title">${q.title}</div>
+            <div class="question-title">
+              ${q.title}
+              ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link" style="margin-left: 8px; font-size: 0.9em;">↗</a>` : ''}
+            </div>
             <div class="question-meta">
               ID: ${q.id}
-              ${q.difficulty ? ` • ${q.difficulty}` : ''}
+              ${q.difficulty ? ` • ${q.difficulty}` : ''}${formatAcceptanceRate(q.acceptanceRate)}
               ${q.source ? ` • ${q.source}` : ''}
             </div>
           </div>
-          ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link">🔗</a>` : ''}
         </div>
       `).join('');
     }
@@ -526,14 +536,17 @@ async function findByDifficulty(){
     listDiv.innerHTML = data.map(q => `
       <div class="question-item">
         <div>
-          <div class="question-title">${q.title}</div>
+          <div class="question-title">
+            ${q.title}
+            ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link" style="margin-left: 8px; font-size: 0.9em;">↗</a>` : ''}
+          </div>
           <div class="question-meta">
             ID: ${q.id}
+            ${q.difficulty ? ` • ${q.difficulty}` : ''}${formatAcceptanceRate(q.acceptanceRate)}
             ${q.category ? ` • ${q.category.name}` : ''}
             ${q.source ? ` • ${q.source}` : ''}
           </div>
         </div>
-        ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link">🔗</a>` : ''}
       </div>
     `).join('');
   }
@@ -565,15 +578,17 @@ async function findById(){
     listDiv.innerHTML = `
       <div class="question-item">
         <div>
-          <div class="question-title">${data.title}</div>
+          <div class="question-title">
+            ${data.title}
+            ${data.externalUrl ? `<a href="${data.externalUrl}" target="_blank" class="link-icon" title="Open question link" style="margin-left: 8px; font-size: 0.9em;">↗</a>` : ''}
+          </div>
           <div class="question-meta">
             ID: ${data.id}
+            ${data.difficulty ? ` • ${data.difficulty}` : ''}${formatAcceptanceRate(data.acceptanceRate)}
             ${data.category ? ` • ${data.category.name}` : ''}
-            ${data.difficulty ? ` • ${data.difficulty}` : ''}
             ${data.source ? ` • ${data.source}` : ''}
           </div>
         </div>
-        ${data.externalUrl ? `<a href="${data.externalUrl}" target="_blank" class="link-icon" title="Open question link">🔗</a>` : ''}
       </div>
     `;
     showRaw(data);
@@ -593,6 +608,7 @@ async function applyAdvancedFilters() {
   const tagName = document.getElementById('tag_select')?.value || '';
   const source = document.getElementById('source_select')?.value || '';
   const search = document.getElementById('title_search')?.value?.trim() || '';
+  const sortBy = document.getElementById('sort_by')?.value || '';
   
   // Build query parameters
   const params = new URLSearchParams();
@@ -602,13 +618,40 @@ async function applyAdvancedFilters() {
   if (source) params.append('source', source);
   if (search) params.append('search', search);
   params.append('page', '0');
-  params.append('size', '100');
+  params.append('size', '1000'); // Get more results for client-side sorting
   
   try {
     const res = await fetch(`${apiBase}?${params}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     
     const data = await res.json();
+    let questions = data.content || [];
+    
+    // Client-side sorting
+    if (sortBy && questions.length > 0) {
+      const difficultyOrder = { 'EASY': 1, 'MEDIUM': 2, 'HARD': 3 };
+      
+      switch(sortBy) {
+        case 'difficulty_asc':
+          questions.sort((a, b) => (difficultyOrder[a.difficulty] || 0) - (difficultyOrder[b.difficulty] || 0));
+          break;
+        case 'difficulty_desc':
+          questions.sort((a, b) => (difficultyOrder[b.difficulty] || 0) - (difficultyOrder[a.difficulty] || 0));
+          break;
+        case 'acceptance_asc':
+          questions.sort((a, b) => (a.acceptanceRate || 0) - (b.acceptanceRate || 0));
+          break;
+        case 'acceptance_desc':
+          questions.sort((a, b) => (b.acceptanceRate || 0) - (a.acceptanceRate || 0));
+          break;
+        case 'title_asc':
+          questions.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+          break;
+        case 'title_desc':
+          questions.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+          break;
+      }
+    }
     
     // Update results count
     const countSpan = document.getElementById('results_count');
@@ -618,17 +661,20 @@ async function applyAdvancedFilters() {
     
     // Display results
     const listDiv = document.getElementById('search_results');
-    if (!data.content || data.content.length === 0) {
+    if (!questions || questions.length === 0) {
       listDiv.innerHTML = '<div class="empty-state">🔍 No questions match your filters</div>';
     } else {
-      listDiv.innerHTML = data.content.map(q => `
+      listDiv.innerHTML = questions.map(q => `
         <div class="question-item">
           <div>
-            <div class="question-title">${q.title}</div>
+            <div class="question-title">
+              ${q.title}
+              ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link" style="margin-left: 8px; font-size: 0.9em;">↗</a>` : ''}
+            </div>
             <div class="question-meta">
               ID: ${q.id}
+              ${q.difficulty ? ` • ${q.difficulty}` : ''}${formatAcceptanceRate(q.acceptanceRate)}
               ${q.category ? ` • ${q.category.name}` : ''}
-              ${q.difficulty ? ` • ${q.difficulty}` : ''}
               ${q.source ? ` • ${q.source}` : ''}
             </div>
             ${q.tags && q.tags.length > 0 ? `
@@ -637,7 +683,6 @@ async function applyAdvancedFilters() {
               </div>
             ` : ''}
           </div>
-          ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link">🔗</a>` : ''}
         </div>
       `).join('');
     }
@@ -666,6 +711,9 @@ function clearAllFilters() {
   
   const titleSearch = document.getElementById('title_search');
   if (titleSearch) titleSearch.value = '';
+  
+  const sortBySelect = document.getElementById('sort_by');
+  if (sortBySelect) sortBySelect.value = '';
   
   // Clear results
   const listDiv = document.getElementById('search_results');
@@ -770,15 +818,17 @@ async function findQuestionsByTag(tagName) {
         ${questions.map(q => `
           <div class="question-item">
             <div>
-              <div class="question-title">${q.title}</div>
+              <div class="question-title">
+                ${q.title}
+                ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link" style="margin-left: 8px; font-size: 0.9em;">↗</a>` : ''}
+              </div>
               <div class="question-meta">
                 ID: ${q.id}
+                ${q.difficulty ? ` • ${q.difficulty}` : ''}${formatAcceptanceRate(q.acceptanceRate)}
                 ${q.category ? ` • ${q.category.name}` : ''}
-                ${q.difficulty ? ` • ${q.difficulty}` : ''}
                 ${q.source ? ` • ${q.source}` : ''}
               </div>
             </div>
-            ${q.externalUrl ? `<a href="${q.externalUrl}" target="_blank" class="link-icon" title="Open question link">🔗</a>` : ''}
           </div>
         `).join('')}
       `;

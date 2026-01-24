@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Coding Practice Platform v2.1</title>
+    <!-- Version: 2.1 - Active Questions & Acceptance Rate - Updated: 2025-10-16 -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-center">
+                <h1 class="main-title">
+                    <span class="title-emoji">🎯</span>
+                    Tick Skill for Practice
+                    <span class="title-emoji">💪</span>
+                </h1>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>Menu</h3>
+                <button class="collapse-btn">←</button>
+            </div>
+            
+            <div class="sidebar-item active">
+                <span class="icon">📋</span>
+                <span>Practice Problems</span>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Active Questions Notice -->
+            <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; color: #155724;">
+                <strong>✓ Active Practice Mode:</strong> Showing <strong>865 curated DSA questions</strong> for optimal practice. 
+                Acceptance rates displayed in <span style="color: #10b981; font-weight: 600;">green</span> next to each problem.
+            </div>
+            
+            <!-- Stats Overview Section -->
+            <div class="stats-overview">
+                <h2>Progress Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card easy">
+                        <div class="stat-header">
+                            <h3>Easy Problems</h3>
+                            <span class="stat-count">12 / 198</span>
+                        </div>
+                        <div class="circular-progress" data-progress="62">
+                            <div class="progress-circle">
+                                <div class="progress-fill easy-fill"></div>
+                                <div class="progress-center">
+                                    <span class="progress-percentage">62%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card medium">
+                        <div class="stat-header">
+                            <h3>Medium Problems</h3>
+                            <span class="stat-count">7 / 507</span>
+                        </div>
+                        <div class="circular-progress" data-progress="14">
+                            <div class="progress-circle">
+                                <div class="progress-fill medium-fill"></div>
+                                <div class="progress-center">
+                                    <span class="progress-percentage">14%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card hard">
+                        <div class="stat-header">
+                            <h3>Hard Problems</h3>
+                            <span class="stat-count">1 / 121</span>
+                        </div>
+                        <div class="circular-progress" data-progress="8">
+                            <div class="progress-circle">
+                                <div class="progress-fill hard-fill"></div>
+                                <div class="progress-center">
+                                    <span class="progress-percentage">8%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card total">
+                        <div class="stat-header">
+                            <h3>Total Progress</h3>
+                            <span class="stat-count">20 / 826</span>
+                        </div>
+                        <div class="circular-progress" data-progress="24">
+                            <div class="progress-circle">
+                                <div class="progress-fill total-fill"></div>
+                                <div class="progress-center">
+                                    <span class="progress-percentage">2.4%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Sections Container -->
+            <div class="filters-container">
+                <!-- Find by Difficulty and Status Section -->
+                <div class="filter-section filter-difficulty">
+                    <div class="filter-subsection">
+                        <h3 class="subsection-title">📊 Find by Difficulty</h3>
+                        <div class="difficulty-dropdown-container">
+                            <select class="difficulty-dropdown" id="difficultyDropdown">
+                                <option value="">Select Difficulty Level</option>
+                                <option value="easy">🟢 Easy (0 problems)</option>
+                                <option value="medium">🟡 Medium (0 problems)</option>
+                                <option value="hard">🔴 Hard (0 problems)</option>
+                            </select>
+                            <div class="dropdown-arrow">
+                                <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                                    <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-subsection">
+                        <h3 class="subsection-title">✅ Find by Status</h3>
+                        <div class="status-dropdown-container">
+                            <select class="status-dropdown" id="statusDropdown">
+                                <option value="">All Problems</option>
+                                <option value="unsolved">❌ Unsolved Only</option>
+                                <option value="solved">✅ Solved Only</option>
+                            </select>
+                            <div class="dropdown-arrow">
+                                <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                                    <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="show-all-container">
+                        <button class="show-all-btn" id="clearFilterBtn">
+                            <span class="tab-icon">🔄</span>
+                            Clear filters and show all
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Find by Tags Section -->
+                <div class="filter-section filter-tags">
+                    <h2 class="section-title">
+                        <span class="section-icon">🏷️</span>
+                        Find by Tags
+                    </h2>
+                    <div class="tags-container">
+                        <div class="tags-grid" id="tagsGrid">
+                            <!-- Tags will be populated by JavaScript -->
+                        </div>
+                        <div class="selected-tags" id="selectedTags" style="display: none;">
+                            <h4>Selected Tags:</h4>
+                            <div class="selected-tags-list" id="selectedTagsList"></div>
+                            <button class="clear-tags-btn" id="clearTagsBtn">Clear All Tags</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-section">
+                <div class="progress-info">
+                    <span class="progress-text">20 / 826</span>
+                    <div class="info-tooltip">
+                        <span class="info-icon">ℹ️</span>
+                        <div class="tooltip-content">
+                            The NeetCode All is all of the problems I've solved on youtube. It's not structured, but it is useful for picking random problems.
+                        </div>
+                    </div>
+                </div>
+                <div class="main-progress-bar">
+                    <div class="main-progress-fill" style="width: 2.4%"></div>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-section">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search" class="search-input">
+                    <button class="search-btn">🔍</button>
+                </div>
+                <div class="view-controls">
+                    <button class="view-btn" id="randomBtn" title="Load 10 random questions">🔀</button>
+                </div>
+            </div>
+
+            <!-- Problems Table -->
+            <div class="problems-section">
+                <div id="categorizedProblems">
+                    <!-- Categories will be populated by JavaScript -->
+                </div>
+                
+                <!-- Pagination Controls -->
+                <div class="pagination-controls" id="paginationControls" style="display: none;">
+                    <div class="pagination-info">
+                        <span id="paginationInfo">Showing 1-5 of 20 categories</span>
+                        <select id="pageSizeSelector" class="page-size-selector">
+                            <option value="3">3 categories</option>
+                            <option value="5">5 categories</option>
+                            <option value="10">10 categories</option>
+                            <option value="100" selected>All categories</option>
+                        </select>
+                    </div>
+                    <div class="pagination-buttons">
+                        <button id="prevPageBtn" class="pagination-btn" disabled>← Previous</button>
+                        <div id="pageNumbers" class="page-numbers"></div>
+                        <button id="nextPageBtn" class="pagination-btn">Next →</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notes Modal -->
+    <div id="notesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Notes for Problem</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="notes-toolbar">
+                    <button type="button" class="toolbar-btn" data-command="bold" title="Bold">
+                        <strong>B</strong>
+                    </button>
+                    <button type="button" class="toolbar-btn" data-command="italic" title="Italic">
+                        <em>I</em>
+                    </button>
+                    <button type="button" class="toolbar-btn" data-command="underline" title="Underline">
+                        <u>U</u>
+                    </button>
+                    <div class="toolbar-divider"></div>
+                    <button type="button" class="toolbar-btn" data-command="insertUnorderedList" title="Bullet List">
+                        • List
+                    </button>
+                    <button type="button" class="toolbar-btn" data-command="insertOrderedList" title="Numbered List">
+                        1. List
+                    </button>
+                    <div class="toolbar-divider"></div>
+                    <button type="button" class="toolbar-btn" data-command="formatBlock" data-value="h3" title="Header">
+                        H
+                    </button>
+                    <button type="button" class="toolbar-btn" data-command="formatBlock" data-value="p" title="Paragraph">
+                        P
+                    </button>
+                </div>
+                <div id="notesEditor" class="notes-editor" contenteditable="true" placeholder="Write your notes here...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelNotes">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveNotes">Save Notes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
